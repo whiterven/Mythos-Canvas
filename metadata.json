@@ -1,0 +1,7 @@
+{
+  "name": "Mythos & Canvas",
+  "description": "A comprehensive AI creative suite combining deep narrative generation with visual editing capabilities. Features a 10-step master storyteller wizard and a Nano-Banana powered image studio.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
