@@ -233,9 +233,9 @@ export const StoryView: React.FC<Props> = ({ content, onReset, isStreaming }) =>
                 <button 
                     onClick={downloadStory}
                     className="text-gray-400 hover:text-brand-accent transition-colors text-xs flex items-center gap-2 uppercase tracking-widest font-bold bg-brand-800/50 px-4 py-2 rounded-full backdrop-blur-sm hover:bg-brand-700"
-                    title="Download Story"
+                    title="Download as Markdown"
                 >
-                    <span className="material-symbols-outlined text-sm">download</span> <span className="hidden sm:inline">Save</span>
+                    <span className="material-symbols-outlined text-sm">download</span> <span className="hidden sm:inline">Export MD</span>
                 </button>
                 <button 
                     onClick={() => window.print()}

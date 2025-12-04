@@ -23,7 +23,8 @@ export enum AppView {
   STORY_RESULT = 'STORY_RESULT',
   IMAGE_STUDIO = 'IMAGE_STUDIO',
   DASHBOARD = 'DASHBOARD',
-  HISTORY = 'HISTORY'
+  HISTORY = 'HISTORY',
+  CHAT = 'CHAT'
 }
 
 export interface ChatMessage {

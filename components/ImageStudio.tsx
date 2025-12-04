@@ -38,9 +38,9 @@ export const ImageStudio: React.FC = () => {
       <div className="text-center mb-10">
         <h2 className="text-3xl font-serif text-white mb-2 flex items-center justify-center gap-3">
             <span className="material-symbols-outlined text-brand-gold text-4xl">image_edit_auto</span>
-            Nano Studio
+            Canvas Studio
         </h2>
-        <p className="text-gray-400">Powered by Gemini 2.5 Flash Image. Upload a visual and transform it with text.</p>
+        <p className="text-gray-400">Powered by advanced vision AI. Upload a visual and transform it with text.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

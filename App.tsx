@@ -3,7 +3,7 @@ import { AppView, StoryConfig, HistoryItem } from './types';
 import { StoryWizard } from './components/StoryWizard';
 import { StoryView } from './components/StoryView';
 import { ImageStudio } from './components/ImageStudio';
-import { ChatAssistant } from './components/ChatAssistant';
+import { ChatSection } from './components/ChatAssistant';
 import { generateStoryStream } from './services/geminiService';
 
 const App: React.FC = () => {
@@ -114,6 +114,8 @@ const App: React.FC = () => {
         );
       case AppView.IMAGE_STUDIO:
         return <ImageStudio />;
+      case AppView.CHAT:
+        return <ChatSection />;
       case AppView.HISTORY:
         return (
             <div className="max-w-5xl mx-auto animate-fade-in">
@@ -161,7 +163,7 @@ const App: React.FC = () => {
               </div>
               
               <div className="relative z-10">
-                <span className="inline-block py-1 px-3 rounded-full bg-brand-900/50 border border-brand-700 text-brand-gold text-xs font-bold tracking-widest uppercase mb-6">Powered by Gemini 1.5 & 3.0</span>
+                <span className="inline-block py-1 px-3 rounded-full bg-brand-900/50 border border-brand-700 text-brand-gold text-xs font-bold tracking-widest uppercase mb-6">Powered by Strong Mind</span>
                 <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 tracking-tight drop-shadow-xl">
                   Where <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-brand-accent">Myth</span> Meets <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-purple-400">Matter</span>
                 </h1>
@@ -181,7 +183,7 @@ const App: React.FC = () => {
             </div>
 
             {/* Main Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-16">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full mb-16">
               {/* Story Engine Card */}
               <button 
                 onClick={() => setView(AppView.WIZARD)}
@@ -192,15 +194,12 @@ const App: React.FC = () => {
                     <div className="w-14 h-14 bg-brand-900 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-accent transition-colors shadow-lg border border-brand-700">
                       <span className="material-symbols-outlined text-white text-2xl">auto_stories</span>
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2 font-serif">Story Engine</h3>
-                    <p className="text-gray-400 group-hover:text-gray-200 text-sm leading-relaxed mb-4">Craft complex, multi-layered narratives using the 32k context window of Gemini 3 Pro.</p>
-                    <div className="mt-auto flex items-center text-brand-accent text-sm font-bold uppercase tracking-wider group-hover:translate-x-1 transition-transform">
-                      Create Now <span className="material-symbols-outlined text-sm ml-1">chevron_right</span>
-                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2 font-serif">Story Engine</h3>
+                    <p className="text-gray-400 group-hover:text-gray-200 text-xs leading-relaxed mb-4">Craft complex, multi-layered narratives using deep reasoning.</p>
                 </div>
               </button>
 
-              {/* Nano Studio Card */}
+              {/* Canvas Studio Card */}
               <button 
                 onClick={() => setView(AppView.IMAGE_STUDIO)}
                 className="group relative bg-brand-800 p-8 rounded-3xl border border-brand-700 hover:border-brand-gold hover:bg-brand-800/80 transition-all text-left overflow-hidden h-full"
@@ -210,11 +209,23 @@ const App: React.FC = () => {
                     <div className="w-14 h-14 bg-brand-900 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-gold transition-colors shadow-lg border border-brand-700">
                       <span className="material-symbols-outlined text-white text-2xl group-hover:text-brand-900">palette</span>
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2 font-serif">Nano Studio</h3>
-                    <p className="text-gray-400 group-hover:text-gray-200 text-sm leading-relaxed mb-4">Edit images with natural language ("Add a retro filter") using Gemini 2.5 Flash.</p>
-                     <div className="mt-auto flex items-center text-brand-gold text-sm font-bold uppercase tracking-wider group-hover:translate-x-1 transition-transform">
-                      Design Now <span className="material-symbols-outlined text-sm ml-1">chevron_right</span>
+                    <h3 className="text-xl font-bold text-white mb-2 font-serif">Canvas Studio</h3>
+                    <p className="text-gray-400 group-hover:text-gray-200 text-xs leading-relaxed mb-4">Edit images with natural language using advanced vision AI.</p>
+                </div>
+              </button>
+
+              {/* Chat Card */}
+              <button 
+                onClick={() => setView(AppView.CHAT)}
+                className="group relative bg-brand-800 p-8 rounded-3xl border border-brand-700 hover:border-blue-400 hover:bg-brand-800/80 transition-all text-left overflow-hidden h-full"
+              >
+                <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-500/10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
+                <div className="relative z-10 flex flex-col h-full">
+                    <div className="w-14 h-14 bg-brand-900 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500 transition-colors shadow-lg border border-brand-700">
+                      <span className="material-symbols-outlined text-white text-2xl">chat</span>
                     </div>
+                    <h3 className="text-xl font-bold text-white mb-2 font-serif">Chat</h3>
+                    <p className="text-gray-400 group-hover:text-gray-200 text-xs leading-relaxed mb-4">Collaborate and brainstorm with your AI assistant.</p>
                 </div>
               </button>
 
@@ -228,21 +239,18 @@ const App: React.FC = () => {
                     <div className="w-14 h-14 bg-brand-900 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500 transition-colors shadow-lg border border-brand-700">
                       <span className="material-symbols-outlined text-white text-2xl">history_edu</span>
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2 font-serif">Chronicles</h3>
-                    <p className="text-gray-400 group-hover:text-gray-200 text-sm leading-relaxed mb-4">Access your saved stories, drafts, and past masterpieces in your private library.</p>
-                    <div className="mt-auto flex items-center text-purple-400 text-sm font-bold uppercase tracking-wider group-hover:translate-x-1 transition-transform">
-                      View Library <span className="material-symbols-outlined text-sm ml-1">chevron_right</span>
-                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2 font-serif">Chronicles</h3>
+                    <p className="text-gray-400 group-hover:text-gray-200 text-xs leading-relaxed mb-4">Access your saved stories and drafts.</p>
                 </div>
               </button>
             </div>
 
             {/* Feature Highlights */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 border-t border-brand-700 pt-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 border-t border-brand-700 py-12">
                 <div className="p-4">
                   <div className="text-brand-accent mb-2 material-symbols-outlined text-3xl">psychology</div>
                   <h4 className="font-bold text-white mb-1">Deep Reasoning</h4>
-                  <p className="text-sm text-gray-500">Powered by Gemini 3 Pro with thinking capabilities.</p>
+                  <p className="text-sm text-gray-500">Powered by advanced reasoning models.</p>
                 </div>
                 <div className="p-4">
                   <div className="text-brand-gold mb-2 material-symbols-outlined text-3xl">bolt</div>
@@ -258,6 +266,109 @@ const App: React.FC = () => {
                   <div className="text-green-400 mb-2 material-symbols-outlined text-3xl">download</div>
                   <h4 className="font-bold text-white mb-1">Export Ready</h4>
                   <p className="text-sm text-gray-500">Print friendly formats and persistent history.</p>
+                </div>
+            </div>
+
+            {/* Workflow Section */}
+            <div className="py-20 border-t border-brand-700/50">
+                <div className="text-center mb-16">
+                    <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-4">From Spark to Spectacle</h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto">Our intelligent pipeline transforms vague concepts into polished masterpieces.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+                    {/* Connecting Line (Desktop) */}
+                    <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-brand-700 to-transparent z-0"></div>
+                    
+                    {[
+                        { icon: 'lightbulb', title: 'Ignite', desc: 'Input raw ideas, premises, or sketches.' },
+                        { icon: 'psychology', title: 'Reason', desc: 'Strong Mind expands depth and logic.' },
+                        { icon: 'edit_note', title: 'Refine', desc: 'Collaborate and tweak in real-time.' },
+                        { icon: 'auto_awesome_motion', title: 'Materialize', desc: 'Export formatted books or assets.' }
+                    ].map((step, idx) => (
+                        <div key={idx} className="relative z-10 flex flex-col items-center text-center">
+                            <div className="w-24 h-24 bg-brand-800 border-4 border-brand-900 rounded-full flex items-center justify-center mb-6 shadow-xl relative group">
+                                <div className="absolute inset-0 bg-brand-accent/20 rounded-full blur-xl group-hover:bg-brand-gold/30 transition-all"></div>
+                                <span className="material-symbols-outlined text-4xl text-white">{step.icon}</span>
+                                <div className="absolute -bottom-3 bg-brand-900 text-brand-gold text-xs font-bold px-3 py-1 rounded-full border border-brand-700">0{idx + 1}</div>
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2">{step.title}</h3>
+                            <p className="text-sm text-gray-500 max-w-[200px]">{step.desc}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Use Cases / Gallery Section */}
+            <div className="py-20">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <span className="text-brand-accent font-bold tracking-widest uppercase text-sm mb-2 block">For Every Creator</span>
+                        <h2 className="text-4xl font-serif font-bold text-white mb-6">Unleash Your Inner Architect</h2>
+                        <div className="space-y-6">
+                            <div className="flex gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 flex-shrink-0">
+                                    <span className="material-symbols-outlined">book_2</span>
+                                </div>
+                                <div>
+                                    <h4 className="text-white font-bold text-lg">The Novelist</h4>
+                                    <p className="text-gray-400 text-sm">Overcome writer's block with a partner that understands foreshadowing, pacing, and character voice.</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 flex-shrink-0">
+                                    <span className="material-symbols-outlined">sports_esports</span>
+                                </div>
+                                <div>
+                                    <h4 className="text-white font-bold text-lg">The World Builder</h4>
+                                    <p className="text-gray-400 text-sm">Generate lore, political systems, and histories for your RPG campaigns or game worlds.</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-400 flex-shrink-0">
+                                    <span className="material-symbols-outlined">brush</span>
+                                </div>
+                                <div>
+                                    <h4 className="text-white font-bold text-lg">The Visual Artist</h4>
+                                    <p className="text-gray-400 text-sm">Describe a mood or style and watch it manifest. Edit existing works with simple commands.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="relative">
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-brand-accent/20 to-brand-gold/20 rounded-3xl blur-2xl"></div>
+                        <div className="relative bg-brand-800 border border-brand-700 rounded-2xl p-8 shadow-2xl overflow-hidden">
+                            <div className="flex items-center gap-2 mb-6 border-b border-brand-700 pb-4">
+                                <span className="w-3 h-3 rounded-full bg-red-500"></span>
+                                <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
+                                <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                                <span className="ml-auto text-xs text-gray-500 font-mono">system_instruction: "master_storyteller"</span>
+                            </div>
+                            <div className="space-y-4 font-mono text-sm text-gray-300">
+                                <p><span className="text-blue-400">User:</span> Create a magic system based on sound.</p>
+                                <p><span className="text-brand-gold">Model:</span> <span className="text-gray-400 italic">// Thinking Budget: 32k tokens used...</span></p>
+                                <p className="pl-4 border-l-2 border-brand-gold">
+                                    The "Resonance" system operates on the frequency of matter. <span className="text-white font-bold">Sonancers</span> use tuning forks crafted from starmetal to manipulate reality. 
+                                    <br/><br/>
+                                    - <span className="text-brand-accent">Low Hum</span>: Earth manipulation.
+                                    <br/>
+                                    - <span className="text-brand-accent">High Pitch</span>: Air/Lightning.
+                                    <br/>
+                                    - <span className="text-brand-accent">Silence</span>: The forbidden art of void...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Footer / CTA */}
+            <div className="mt-12 bg-gradient-to-r from-brand-800 to-brand-900 rounded-3xl p-12 text-center border border-brand-700 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+                <div className="relative z-10">
+                    <h2 className="text-3xl font-serif text-white mb-6">Ready to Create?</h2>
+                    <button onClick={() => setView(AppView.WIZARD)} className="bg-brand-gold hover:bg-yellow-400 text-brand-900 px-10 py-4 rounded-xl font-bold text-lg shadow-xl hover:shadow-yellow-400/20 transition-all transform hover:-translate-y-1">
+                        Begin Your Journey
+                    </button>
                 </div>
             </div>
             
@@ -316,6 +427,12 @@ const App: React.FC = () => {
                     Images
                 </button>
                 <button 
+                    onClick={() => setView(AppView.CHAT)}
+                    className={`text-sm font-medium px-5 py-2 rounded-full transition-all ${view === AppView.CHAT ? 'bg-brand-700 text-white shadow-md' : 'text-gray-400 hover:text-white'}`}
+                >
+                    Chat
+                </button>
+                <button 
                     onClick={() => setView(AppView.HISTORY)}
                     className={`text-sm font-medium px-5 py-2 rounded-full transition-all ${view === AppView.HISTORY ? 'bg-brand-700 text-white shadow-md' : 'text-gray-400 hover:text-white'}`}
                 >
@@ -330,7 +447,7 @@ const App: React.FC = () => {
         {renderContent()}
       </main>
 
-      <ChatAssistant />
+      {/* Floating chat assistant removed */}
       
       <style>{`
         @keyframes spin-reverse {
@@ -338,6 +455,13 @@ const App: React.FC = () => {
         }
         .animate-spin-reverse {
             animation: spin-reverse 1s linear infinite;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
       `}</style>
     </div>
