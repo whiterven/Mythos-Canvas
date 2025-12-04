@@ -5,7 +5,7 @@ import { StoryConfig } from "../types";
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 /**
- * Generates the master story using gemini-3-pro-preview with high thinking budget.
+ * Generates the master story using gemini-2.5-flash with thinking enabled.
  * Uses streaming to provide real-time feedback.
  */
 export const generateStoryStream = async (
@@ -62,10 +62,10 @@ export const generateStoryStream = async (
 
   try {
     const responseStream = await ai.models.generateContentStream({
-      model: "gemini-3-pro-preview",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
-        thinkingConfig: { thinkingBudget: 32768 }, 
+        thinkingConfig: { thinkingBudget: 16000 }, 
       },
     });
 
@@ -127,12 +127,12 @@ export const editImage = async (imageFile: File, prompt: string): Promise<string
 
 /**
  * Chatbot functionality.
- * Default model is Pro, but allows switching to Flash-Lite for speed.
+ * Default model is 2.5 Flash, but allows switching to Flash-Lite for speed.
  */
 export const sendChatMessage = async (
     history: {role: string, parts: {text: string}[]}[], 
     newMessage: string,
-    model: string = "gemini-3-pro-preview"
+    model: string = "gemini-2.5-flash"
 ): Promise<string> => {
   try {
     const chat = ai.chats.create({
@@ -144,21 +144,6 @@ export const sendChatMessage = async (
     return response.text || "";
   } catch (error) {
     console.error(`Chat failed with model ${model}:`, error);
-    
-    // Fallback strategy if the requested model fails (e.g., 404 Not Found)
-    if (model !== "gemini-2.5-flash") {
-        console.log("Attempting fallback to gemini-2.5-flash...");
-        try {
-            const fallbackChat = ai.chats.create({
-                model: "gemini-2.5-flash",
-                history: history,
-            });
-            const fallbackResponse = await fallbackChat.sendMessage({ message: newMessage });
-            return fallbackResponse.text || "";
-        } catch (fallbackError) {
-            console.error("Fallback chat failed:", fallbackError);
-        }
-    }
     
     return "I'm having trouble connecting to the AI models right now. Please try again.";
   }

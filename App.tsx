@@ -96,7 +96,7 @@ const App: React.FC = () => {
                 <div className="absolute inset-4 border-b-4 border-brand-accent rounded-full animate-spin-reverse"></div>
             </div>
             <h2 className="text-4xl font-serif text-white mb-4 tracking-tight">Weaving Narrative</h2>
-            <p className="text-gray-400 text-lg max-w-md text-center">Consulting the muse... Gemini 3.0 Pro is analyzing your constraints and structuring the plot.</p>
+            <p className="text-gray-400 text-lg max-w-md text-center">Consulting the muse... Gemini 2.5 Flash is analyzing your constraints and structuring the plot.</p>
         </div>
       );
     }
@@ -345,7 +345,7 @@ const App: React.FC = () => {
                             </div>
                             <div className="space-y-4 font-mono text-sm text-gray-300">
                                 <p><span className="text-blue-400">User:</span> Create a magic system based on sound.</p>
-                                <p><span className="text-brand-gold">Model:</span> <span className="text-gray-400 italic">// Thinking Budget: 32k tokens used...</span></p>
+                                <p><span className="text-brand-gold">Model:</span> <span className="text-gray-400 italic">// Thinking Budget: 16k tokens used...</span></p>
                                 <p className="pl-4 border-l-2 border-brand-gold">
                                     The "Resonance" system operates on the frequency of matter. <span className="text-white font-bold">Sonancers</span> use tuning forks crafted from starmetal to manipulate reality. 
                                     <br/><br/>
@@ -443,7 +443,7 @@ const App: React.FC = () => {
       </nav>
 
       {/* Main Area */}
-      <main className="container mx-auto px-4 py-8">
+      <main className={`mx-auto ${view === AppView.CHAT ? 'w-full h-[calc(100vh-80px)]' : 'container px-4 py-8'}`}>
         {renderContent()}
       </main>
 

@@ -7,7 +7,7 @@ export const ChatSection: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isFastMode, setIsFastMode] = useState(false); // Default to Smart (Pro)
+  const [isFastMode, setIsFastMode] = useState(false); // Default to Smart (Flash)
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -41,8 +41,8 @@ export const ChatSection: React.FC = () => {
     }));
 
     // Choose model based on toggle
-    // Fast = Gemini 2.5 Flash, Smart = Gemini 3 Pro
-    const model = isFastMode ? 'gemini-2.5-flash' : 'gemini-3-pro-preview';
+    // Fast = Gemini Flash Lite, Smart = Gemini 2.5 Flash
+    const model = isFastMode ? 'gemini-flash-lite-latest' : 'gemini-2.5-flash';
     
     const responseText = await sendChatMessage(history, userMsg.text, model);
     
@@ -62,7 +62,7 @@ export const ChatSection: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-[calc(100vh-140px)] overflow-hidden rounded-2xl bg-[#0b101b] border border-brand-800/50 relative">
+    <div className="flex h-full w-full bg-[#0f172a] relative">
       
       {/* Sidebar */}
       <div 
@@ -115,30 +115,30 @@ export const ChatSection: React.FC = () => {
         </div>
 
         {/* Messages Container */}
-        <div className="flex-1 overflow-y-auto p-4 md:px-20 md:py-6 scroll-smooth custom-scrollbar" ref={scrollRef}>
+        <div className="flex-1 overflow-y-auto p-4 md:px-20 md:py-4 scroll-smooth custom-scrollbar" ref={scrollRef}>
             {messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center max-w-2xl mx-auto text-center px-4">
-                     <div className="w-12 h-12 bg-brand-800/50 rounded-xl flex items-center justify-center mb-4 shadow-lg border border-brand-700/50">
-                        <span className="material-symbols-outlined text-3xl text-brand-gold">auto_awesome</span>
+                <div className="h-full flex flex-col items-center justify-center max-w-2xl mx-auto text-center px-4 pb-20">
+                     <div className="w-10 h-10 bg-brand-800/50 rounded-xl flex items-center justify-center mb-4 shadow-lg border border-brand-700/50">
+                        <span className="material-symbols-outlined text-2xl text-brand-gold">auto_awesome</span>
                      </div>
-                     <h2 className="text-xl md:text-2xl font-serif text-white mb-2">Hey! What's up?</h2>
-                     <p className="text-sm text-gray-500 mb-8">Ready to craft another epic story or tweak code?</p>
+                     <h2 className="text-xl font-serif text-white mb-2">Hey! What's up?</h2>
+                     <p className="text-xs text-gray-500 mb-6">Ready to craft another epic story or tweak code?</p>
                      
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full text-left max-w-lg">
                         {suggestions.map((s, i) => (
                             <button 
                                 key={i}
                                 onClick={() => handleSend(s)}
-                                className="px-3 py-2 bg-brand-800/30 hover:bg-brand-800 border border-brand-700/30 hover:border-brand-600 rounded-lg text-xs text-gray-400 hover:text-white transition-all flex items-center gap-2 group"
+                                className="px-2.5 py-1.5 bg-brand-800/30 hover:bg-brand-800 border border-brand-700/30 hover:border-brand-600 rounded-lg text-[10px] text-gray-400 hover:text-white transition-all flex items-center gap-2 group"
                             >
-                                <span className="material-symbols-outlined text-brand-accent/70 text-[14px] group-hover:text-brand-accent">subdirectory_arrow_right</span>
+                                <span className="material-symbols-outlined text-brand-accent/70 text-[12px] group-hover:text-brand-accent">subdirectory_arrow_right</span>
                                 {s}
                             </button>
                         ))}
                      </div>
                 </div>
             ) : (
-                <div className="flex flex-col gap-4 max-w-3xl mx-auto pt-4 pb-2">
+                <div className="flex flex-col gap-3 max-w-3xl mx-auto pt-2 pb-2">
                     {messages.map((msg, idx) => (
                         <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                              {msg.role === 'model' && (
@@ -146,9 +146,9 @@ export const ChatSection: React.FC = () => {
                                     <span className="material-symbols-outlined text-brand-900 text-[10px] font-bold">auto_awesome</span>
                                  </div>
                              )}
-                             <div className={`max-w-[85%] ${msg.role === 'user' ? 'bg-brand-accent text-white rounded-xl rounded-tr-none px-4 py-2 shadow-sm' : 'text-gray-300 px-1 py-1'}`}>
+                             <div className={`max-w-[85%] ${msg.role === 'user' ? 'bg-brand-accent text-white rounded-xl rounded-tr-none px-3 py-2 shadow-sm' : 'text-gray-300 px-3 py-2 text-sm'}`}>
                                  {msg.text.split('\n').map((line, i) => (
-                                    <p key={i} className={`text-sm leading-relaxed ${i > 0 ? 'mt-2' : ''}`}>{line}</p>
+                                    <p key={i} className={`leading-relaxed ${i > 0 ? 'mt-1' : ''}`}>{line}</p>
                                  ))}
                              </div>
                         </div>
@@ -170,60 +170,60 @@ export const ChatSection: React.FC = () => {
         </div>
 
         {/* Input Bar */}
-        <div className="px-4 pb-3 pt-1 bg-transparent relative z-10">
-            <div className="max-w-3xl mx-auto">
-                 <div className="relative bg-[#1e2330] rounded-2xl border border-brand-700/50 shadow-lg focus-within:border-brand-600 focus-within:ring-1 focus-within:ring-brand-600/30 transition-all">
-                     <textarea
-                        ref={textareaRef}
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                handleSend();
-                            }
-                        }}
-                        placeholder="How can Strong Mind help?"
-                        className="w-full bg-transparent border-none text-white text-sm placeholder-gray-500 px-4 py-3 focus:ring-0 resize-none max-h-[150px] scrollbar-hide"
-                        rows={1}
-                     />
-                     
-                     <div className="flex justify-between items-center px-3 pb-2 pt-0">
-                        {/* Model Selector / Tools */}
-                        <div className="flex items-center gap-1">
-                             <button className="p-1.5 text-gray-500 hover:text-white hover:bg-white/10 rounded-full transition-colors">
-                                 <span className="material-symbols-outlined text-lg">attach_file</span>
-                             </button>
-                             <div 
-                                className="flex items-center bg-black/20 rounded-full p-0.5 border border-brand-700/30 cursor-pointer ml-1"
-                                onClick={() => setIsFastMode(!isFastMode)}
-                             >
-                                 <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 ${isFastMode ? 'bg-brand-accent text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'}`}>
-                                     <span className="material-symbols-outlined text-[12px]">bolt</span>
-                                     Fast
-                                 </div>
-                                 <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 ${!isFastMode ? 'bg-brand-gold text-brand-900 shadow-sm' : 'text-gray-500 hover:text-gray-300'}`}>
-                                     <span className="material-symbols-outlined text-[12px]">psychology</span>
-                                     Smart
-                                 </div>
+        <div className="px-4 pb-4 pt-1 bg-transparent relative z-10 w-full flex justify-center">
+            <div className="w-full max-w-3xl relative bg-[#1e2330] rounded-2xl border border-brand-700/50 shadow-lg focus-within:border-brand-600 focus-within:ring-1 focus-within:ring-brand-600/30 transition-all p-2">
+                 <textarea
+                    ref={textareaRef}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSend();
+                        }
+                    }}
+                    placeholder="How can Strong Mind help?"
+                    className="w-full bg-transparent border-none text-white text-sm placeholder-gray-500 px-2 py-1 focus:ring-0 resize-none max-h-[150px] scrollbar-hide"
+                    rows={1}
+                 />
+                 
+                 <div className="flex justify-between items-center px-1 pb-1 pt-2">
+                    {/* Model Selector / Tools */}
+                    <div className="flex items-center gap-1">
+                         <button className="p-1.5 text-gray-500 hover:text-white hover:bg-white/10 rounded-full transition-colors">
+                             <span className="material-symbols-outlined text-lg">attach_file</span>
+                         </button>
+                         <div 
+                            className="flex items-center bg-black/20 rounded-full p-0.5 border border-brand-700/30 cursor-pointer ml-1"
+                            onClick={() => setIsFastMode(!isFastMode)}
+                         >
+                             <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 ${isFastMode ? 'bg-brand-accent text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'}`}>
+                                 <span className="material-symbols-outlined text-[12px]">bolt</span>
+                                 Fast
                              </div>
-                        </div>
+                             <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 ${!isFastMode ? 'bg-brand-gold text-brand-900 shadow-sm' : 'text-gray-500 hover:text-gray-300'}`}>
+                                 <span className="material-symbols-outlined text-[12px]">psychology</span>
+                                 Smart
+                             </div>
+                         </div>
+                    </div>
 
-                        {/* Send Button */}
-                        <button 
-                            onClick={() => handleSend()}
-                            disabled={!input.trim() || isLoading}
-                            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${input.trim() ? 'bg-white text-black hover:bg-gray-200' : 'bg-brand-700 text-gray-600 cursor-not-allowed'}`}
-                        >
-                            <span className="material-symbols-outlined text-lg">arrow_upward</span>
-                        </button>
-                     </div>
+                    {/* Send Button */}
+                    <button 
+                        onClick={() => handleSend()}
+                        disabled={!input.trim() || isLoading}
+                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${input.trim() ? 'bg-white text-black hover:bg-gray-200' : 'bg-brand-700 text-gray-600 cursor-not-allowed'}`}
+                    >
+                        <span className="material-symbols-outlined text-base">arrow_upward</span>
+                    </button>
                  </div>
-                 <p className="text-center text-[10px] text-gray-700 mt-1.5 font-medium">
-                     Powered by Gemini 3.0 Pro & Flash. AI can make mistakes.
-                 </p>
             </div>
         </div>
+        
+        {/* Footer Text */}
+         <p className="text-center text-[9px] text-gray-700 pb-2 font-medium absolute bottom-1 w-full pointer-events-none">
+             Powered by Gemini 2.5 Flash & Lite. AI can make mistakes.
+         </p>
 
       </div>
       <style>{`
