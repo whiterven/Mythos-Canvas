@@ -322,6 +322,28 @@ export const quickAnalyze = async (text: string): Promise<string> => {
     }
 }
 
+/**
+ * Rewrite text based on an instruction.
+ */
+export const rewriteText = async (text: string, instruction: string): Promise<string> => {
+  try {
+     const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `
+      TASK: Rewrite the following text based on the instruction. Return ONLY the rewritten text, no commentary.
+      
+      TEXT: "${text}"
+      
+      INSTRUCTION: ${instruction}
+      `
+    });
+    return response.text?.trim() || text;
+  } catch (e) {
+    console.error("Rewrite failed:", e);
+    return text;
+  }
+}
+
 // Helper function to convert File to Base64 string for API
 async function fileToGenerativePart(file: File): Promise<string> {
   return new Promise((resolve, reject) => {

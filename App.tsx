@@ -59,6 +59,15 @@ const App: React.FC = () => {
     localStorage.setItem('mythos_history', JSON.stringify(newHistory));
   };
 
+  const updateHistoryItem = (content: string) => {
+    // Attempt to find the matching item in history (based on title or if we had an ID)
+    // Since we don't have a stable ID for the currently generated story in this state,
+    // we will mostly rely on saving new versions or just updating the 'generatedStory' state.
+    // If the user was editing a loaded history item, we might want to update it.
+    // For simplicity in this demo, we just update the volatile state.
+    // In a production app, we would track the `currentStoryId`.
+  };
+
   const handleStoryComplete = async (config: StoryConfig) => {
     setIsGenerating(true);
     
@@ -138,6 +147,7 @@ const App: React.FC = () => {
                 content={generatedStory || ''} 
                 onReset={() => { setGeneratedStory(null); setView(AppView.DASHBOARD); }} 
                 isStreaming={isGenerating}
+                onUpdate={(newContent) => setGeneratedStory(newContent)}
             />
         );
       case AppView.IMAGE_STUDIO:
