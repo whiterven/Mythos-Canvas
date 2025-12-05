@@ -84,12 +84,15 @@ const RichTextRenderer: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-// Helper to parse bold/italic inline
+// Helper to parse bold/italic/strikethrough/code inline
 const parseInline = (text: string) => {
-  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+  // Extended regex to capture strikethrough (~~) and inline code (`)
+  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|~~.*?~~|`.*?`)/g);
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) return <strong key={i} className="font-bold text-brand-900">{part.slice(2, -2)}</strong>;
     if (part.startsWith('*') && part.endsWith('*')) return <em key={i} className="italic text-brand-800">{part.slice(1, -1)}</em>;
+    if (part.startsWith('~~') && part.endsWith('~~')) return <span key={i} className="line-through text-gray-500 decoration-gray-400 decoration-2">{part.slice(2, -2)}</span>;
+    if (part.startsWith('`') && part.endsWith('`')) return <code key={i} className="font-mono text-[0.9em] bg-black/5 text-brand-900 px-1.5 py-0.5 rounded border border-black/10 mx-0.5">{part.slice(1, -1)}</code>;
     return part;
   });
 };
