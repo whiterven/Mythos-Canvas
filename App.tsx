@@ -10,6 +10,7 @@ const App: React.FC = () => {
   const [view, setView] = useState<AppView>(AppView.DASHBOARD);
   const [generatedStory, setGeneratedStory] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   // History States
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -57,15 +58,6 @@ const App: React.FC = () => {
     const newHistory = [newItem, ...history];
     setHistory(newHistory);
     localStorage.setItem('mythos_history', JSON.stringify(newHistory));
-  };
-
-  const updateHistoryItem = (content: string) => {
-    // Attempt to find the matching item in history (based on title or if we had an ID)
-    // Since we don't have a stable ID for the currently generated story in this state,
-    // we will mostly rely on saving new versions or just updating the 'generatedStory' state.
-    // If the user was editing a loaded history item, we might want to update it.
-    // For simplicity in this demo, we just update the volatile state.
-    // In a production app, we would track the `currentStoryId`.
   };
 
   const handleStoryComplete = async (config: StoryConfig) => {
@@ -119,6 +111,14 @@ const App: React.FC = () => {
       const newHistory = imageHistory.filter(h => h.id !== id);
       setImageHistory(newHistory);
       localStorage.setItem('mythos_image_history', JSON.stringify(newHistory));
+  };
+
+  const handleNav = (targetView: AppView) => {
+      if (targetView === AppView.IMAGE_STUDIO) {
+          setSelectedImageToEdit(null);
+      }
+      setView(targetView);
+      setIsMenuOpen(false);
   };
 
   const renderContent = () => {
@@ -252,10 +252,10 @@ const App: React.FC = () => {
                 </p>
                 
                 <div className="flex flex-col md:flex-row justify-center gap-3 md:gap-4">
-                  <button onClick={() => setView(AppView.WIZARD)} className="bg-brand-accent hover:bg-indigo-500 text-white px-6 py-3 md:px-8 md:py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-indigo-500/25 flex items-center justify-center gap-2">
+                  <button onClick={() => handleNav(AppView.WIZARD)} className="bg-brand-accent hover:bg-indigo-500 text-white px-6 py-3 md:px-8 md:py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-indigo-500/25 flex items-center justify-center gap-2">
                     Start a Story <span className="material-symbols-outlined">arrow_forward</span>
                   </button>
-                  <button onClick={() => { setSelectedImageToEdit(null); setView(AppView.IMAGE_STUDIO); }} className="bg-brand-800 hover:bg-brand-700 border border-brand-700 text-white px-6 py-3 md:px-8 md:py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2">
+                  <button onClick={() => { setSelectedImageToEdit(null); handleNav(AppView.IMAGE_STUDIO); }} className="bg-brand-800 hover:bg-brand-700 border border-brand-700 text-white px-6 py-3 md:px-8 md:py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2">
                     Open Studio <span className="material-symbols-outlined">palette</span>
                   </button>
                 </div>
@@ -266,7 +266,7 @@ const App: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 w-full mb-12 md:mb-16">
               {/* Story Engine Card */}
               <button 
-                onClick={() => setView(AppView.WIZARD)}
+                onClick={() => handleNav(AppView.WIZARD)}
                 className="group relative bg-brand-800 p-6 md:p-8 rounded-3xl border border-brand-700 hover:border-brand-accent hover:bg-brand-800/80 transition-all text-left overflow-hidden h-full"
               >
                 <div className="absolute -right-10 -top-10 w-40 h-40 bg-brand-accent/10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
@@ -281,7 +281,7 @@ const App: React.FC = () => {
 
               {/* Canvas Studio Card */}
               <button 
-                onClick={() => { setSelectedImageToEdit(null); setView(AppView.IMAGE_STUDIO); }}
+                onClick={() => { setSelectedImageToEdit(null); handleNav(AppView.IMAGE_STUDIO); }}
                 className="group relative bg-brand-800 p-6 md:p-8 rounded-3xl border border-brand-700 hover:border-brand-gold hover:bg-brand-800/80 transition-all text-left overflow-hidden h-full"
               >
                 <div className="absolute -right-10 -top-10 w-40 h-40 bg-brand-gold/10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
@@ -296,7 +296,7 @@ const App: React.FC = () => {
 
               {/* Chat Card */}
               <button 
-                onClick={() => setView(AppView.CHAT)}
+                onClick={() => handleNav(AppView.CHAT)}
                 className="group relative bg-brand-800 p-6 md:p-8 rounded-3xl border border-brand-700 hover:border-blue-400 hover:bg-brand-800/80 transition-all text-left overflow-hidden h-full"
               >
                 <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-500/10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
@@ -311,7 +311,7 @@ const App: React.FC = () => {
 
               {/* Chronicles Card */}
               <button 
-                onClick={() => setView(AppView.HISTORY)}
+                onClick={() => handleNav(AppView.HISTORY)}
                 className="group relative bg-brand-800 p-6 md:p-8 rounded-3xl border border-brand-700 hover:border-purple-400 hover:bg-brand-800/80 transition-all text-left overflow-hidden h-full"
               >
                 <div className="absolute -right-10 -top-10 w-40 h-40 bg-purple-500/10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
@@ -444,7 +444,7 @@ const App: React.FC = () => {
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
                 <div className="relative z-10">
                     <h2 className="text-2xl md:text-3xl font-serif text-white mb-6">Ready to Create?</h2>
-                    <button onClick={() => setView(AppView.WIZARD)} className="bg-brand-gold hover:bg-yellow-400 text-brand-900 px-8 py-3 md:px-10 md:py-4 rounded-xl font-bold text-base md:text-lg shadow-xl hover:shadow-yellow-400/20 transition-all transform hover:-translate-y-1">
+                    <button onClick={() => handleNav(AppView.WIZARD)} className="bg-brand-gold hover:bg-yellow-400 text-brand-900 px-8 py-3 md:px-10 md:py-4 rounded-xl font-bold text-base md:text-lg shadow-xl hover:shadow-yellow-400/20 transition-all transform hover:-translate-y-1">
                         Begin Your Journey
                     </button>
                 </div>
@@ -455,7 +455,7 @@ const App: React.FC = () => {
               <div className="mt-8 md:mt-12 bg-brand-900/50 border border-brand-700/50 rounded-2xl p-4 md:p-6">
                  <div className="flex justify-between items-center mb-4">
                     <h3 className="text-base md:text-lg font-bold text-white">Continue Creating</h3>
-                    <button onClick={() => setView(AppView.HISTORY)} className="text-xs text-brand-accent hover:text-white">View All</button>
+                    <button onClick={() => handleNav(AppView.HISTORY)} className="text-xs text-brand-accent hover:text-white">View All</button>
                  </div>
                  <div className="grid gap-4 md:grid-cols-2">
                     {/* Story Snippet */}
@@ -492,45 +492,77 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-brand-900 text-gray-100 font-sans selection:bg-brand-accent selection:text-white">
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+         <div 
+             className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm animate-fade-in"
+             onClick={() => setIsMenuOpen(false)}
+         />
+      )}
+
       {/* Header */}
-      <nav className="border-b border-brand-700 bg-brand-900/90 backdrop-blur sticky top-0 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between gap-4">
+      <nav className="border-b border-brand-700 bg-brand-900/90 backdrop-blur sticky top-0 z-50 shadow-sm transition-all">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between relative bg-brand-900/0">
+            {/* Logo */}
             <div 
-              className="flex items-center gap-2 md:gap-3 cursor-pointer group flex-shrink-0" 
-              onClick={() => setView(AppView.DASHBOARD)}
+              className="flex items-center gap-2 md:gap-3 cursor-pointer group flex-shrink-0 z-50" 
+              onClick={() => handleNav(AppView.DASHBOARD)}
             >
                 <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-brand-gold to-brand-accent rounded-lg flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
                     <span className="material-symbols-outlined text-brand-900 text-lg md:text-2xl">auto_awesome</span>
                 </div>
                 <span className="font-serif font-bold text-lg md:text-xl tracking-wide text-white hidden sm:block">Mythos & Canvas</span>
+                <span className="font-serif font-bold text-lg tracking-wide text-white sm:hidden">Mythos</span>
             </div>
             
-            {/* Scrollable Nav for Mobile */}
-            <div className="flex gap-2 bg-brand-800/50 p-1 md:p-1.5 rounded-full border border-brand-700/50 overflow-x-auto max-w-[calc(100vw-140px)] md:max-w-none scrollbar-hide">
-                <button 
-                    onClick={() => setView(AppView.WIZARD)}
-                    className={`text-xs md:text-sm font-medium px-3 py-1.5 md:px-5 md:py-2 rounded-full transition-all whitespace-nowrap ${view === AppView.WIZARD ? 'bg-brand-700 text-white shadow-md' : 'text-gray-400 hover:text-white'}`}
-                >
-                    Story
-                </button>
-                <button 
-                    onClick={() => { setSelectedImageToEdit(null); setView(AppView.IMAGE_STUDIO); }}
-                    className={`text-xs md:text-sm font-medium px-3 py-1.5 md:px-5 md:py-2 rounded-full transition-all whitespace-nowrap ${view === AppView.IMAGE_STUDIO ? 'bg-brand-700 text-white shadow-md' : 'text-gray-400 hover:text-white'}`}
-                >
-                    Images
-                </button>
-                <button 
-                    onClick={() => setView(AppView.CHAT)}
-                    className={`text-xs md:text-sm font-medium px-3 py-1.5 md:px-5 md:py-2 rounded-full transition-all whitespace-nowrap ${view === AppView.CHAT ? 'bg-brand-700 text-white shadow-md' : 'text-gray-400 hover:text-white'}`}
-                >
-                    Chat
-                </button>
-                <button 
-                    onClick={() => setView(AppView.HISTORY)}
-                    className={`text-xs md:text-sm font-medium px-3 py-1.5 md:px-5 md:py-2 rounded-full transition-all whitespace-nowrap ${view === AppView.HISTORY ? 'bg-brand-700 text-white shadow-md' : 'text-gray-400 hover:text-white'}`}
-                >
-                    Library
-                </button>
+            {/* Desktop Nav */}
+            <div className="hidden md:flex gap-2 bg-brand-800/50 p-1.5 rounded-full border border-brand-700/50">
+                {[
+                    { id: AppView.WIZARD, label: 'Story' },
+                    { id: AppView.IMAGE_STUDIO, label: 'Images' },
+                    { id: AppView.CHAT, label: 'Chat' },
+                    { id: AppView.HISTORY, label: 'Library' }
+                ].map(item => (
+                    <button 
+                        key={item.id}
+                        onClick={() => handleNav(item.id)}
+                        className={`text-sm font-medium px-5 py-2 rounded-full transition-all whitespace-nowrap ${view === item.id ? 'bg-brand-700 text-white shadow-md' : 'text-gray-400 hover:text-white'}`}
+                    >
+                        {item.label}
+                    </button>
+                ))}
+            </div>
+
+            {/* Mobile Menu Toggle */}
+            <button 
+                className="md:hidden p-2 text-gray-400 hover:text-white focus:outline-none active:scale-95 transition-transform z-50"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label="Toggle Menu"
+            >
+                <span className="material-symbols-outlined text-3xl">
+                    {isMenuOpen ? 'close' : 'menu'}
+                </span>
+            </button>
+        </div>
+
+        {/* Mobile Dropdown */}
+        <div className={`absolute top-full left-0 w-full bg-brand-900 border-b border-brand-700 shadow-2xl transition-all duration-300 ease-in-out origin-top md:hidden z-40 ${isMenuOpen ? 'translate-y-0 opacity-100 pointer-events-auto' : '-translate-y-4 opacity-0 pointer-events-none'}`}>
+             <div className="p-4 space-y-2 flex flex-col">
+                {[
+                    { id: AppView.WIZARD, label: 'Story', icon: 'auto_stories' },
+                    { id: AppView.IMAGE_STUDIO, label: 'Images', icon: 'palette' },
+                    { id: AppView.CHAT, label: 'Chat', icon: 'chat' },
+                    { id: AppView.HISTORY, label: 'Library', icon: 'history_edu' }
+                ].map(item => (
+                    <button 
+                        key={item.id}
+                        onClick={() => handleNav(item.id)}
+                        className={`flex items-center gap-4 w-full text-left px-4 py-3 rounded-xl transition-all ${view === item.id ? 'bg-brand-800 text-white font-bold border border-brand-700 shadow-sm' : 'text-gray-400 hover:bg-brand-800/50 hover:text-white'}`}
+                    >
+                        <span className={`material-symbols-outlined ${view === item.id ? 'text-brand-gold' : ''}`}>{item.icon}</span>
+                        {item.label}
+                    </button>
+                ))}
             </div>
         </div>
       </nav>
