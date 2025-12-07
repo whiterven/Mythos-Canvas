@@ -4,6 +4,7 @@ import { StoryWizard } from './components/StoryWizard';
 import { StoryView } from './components/StoryView';
 import { ImageStudio } from './components/ImageStudio';
 import { ChatSection } from './components/ChatAssistant';
+import { InfographicStudio } from './components/InfographicStudio';
 import { generateStoryStream } from './services/geminiService';
 
 const App: React.FC = () => {
@@ -186,6 +187,8 @@ const App: React.FC = () => {
         );
       case AppView.IMAGE_STUDIO:
         return <ImageStudio initialImage={selectedImageToEdit} />;
+      case AppView.INFOGRAPHICS:
+        return <InfographicStudio />;
       case AppView.CHAT:
         return <ChatSection />;
       case AppView.HISTORY:
@@ -328,6 +331,21 @@ const App: React.FC = () => {
                 </div>
               </button>
 
+              {/* Infographics Card (New) */}
+              <button 
+                onClick={() => handleNav(AppView.INFOGRAPHICS)}
+                className="group relative bg-brand-800 p-6 md:p-8 rounded-3xl border border-brand-700 hover:border-green-400 hover:bg-brand-800/80 transition-all text-left overflow-hidden h-full"
+              >
+                <div className="absolute -right-10 -top-10 w-40 h-40 bg-green-500/10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
+                <div className="relative z-10 flex flex-col h-full items-start">
+                    <div className="w-12 h-12 md:w-14 md:h-14 bg-brand-900 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:bg-green-500 transition-colors shadow-lg border border-brand-700">
+                      <span className="material-symbols-outlined text-white text-xl md:text-2xl">dashboard_customize</span>
+                    </div>
+                    <h3 className="text-lg md:text-xl font-bold text-white mb-2 font-serif">Infographics</h3>
+                    <p className="text-gray-400 group-hover:text-gray-200 text-xs leading-relaxed mb-2 md:mb-4">Convert text into visual knowledge cards.</p>
+                </div>
+              </button>
+
               {/* Chat Card */}
               <button 
                 onClick={() => handleNav(AppView.CHAT)}
@@ -340,21 +358,6 @@ const App: React.FC = () => {
                     </div>
                     <h3 className="text-lg md:text-xl font-bold text-white mb-2 font-serif">Chat</h3>
                     <p className="text-gray-400 group-hover:text-gray-200 text-xs leading-relaxed mb-2 md:mb-4">Collaborate and brainstorm with your AI assistant.</p>
-                </div>
-              </button>
-
-              {/* Chronicles Card */}
-              <button 
-                onClick={() => handleNav(AppView.HISTORY)}
-                className="group relative bg-brand-800 p-6 md:p-8 rounded-3xl border border-brand-700 hover:border-purple-400 hover:bg-brand-800/80 transition-all text-left overflow-hidden h-full"
-              >
-                <div className="absolute -right-10 -top-10 w-40 h-40 bg-purple-500/10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
-                <div className="relative z-10 flex flex-col h-full items-start">
-                    <div className="w-12 h-12 md:w-14 md:h-14 bg-brand-900 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:bg-purple-500 transition-colors shadow-lg border border-brand-700">
-                      <span className="material-symbols-outlined text-white text-xl md:text-2xl">history_edu</span>
-                    </div>
-                    <h3 className="text-lg md:text-xl font-bold text-white mb-2 font-serif">Library</h3>
-                    <p className="text-gray-400 group-hover:text-gray-200 text-xs leading-relaxed mb-2 md:mb-4">Access your saved stories and visual creations.</p>
                 </div>
               </button>
             </div>
@@ -554,6 +557,7 @@ const App: React.FC = () => {
                 {[
                     { id: AppView.WIZARD, label: 'Story' },
                     { id: AppView.IMAGE_STUDIO, label: 'Images' },
+                    { id: AppView.INFOGRAPHICS, label: 'Infographics' },
                     { id: AppView.CHAT, label: 'Chat' },
                     { id: AppView.HISTORY, label: 'Library' }
                 ].map(item => (
@@ -585,6 +589,7 @@ const App: React.FC = () => {
                 {[
                     { id: AppView.WIZARD, label: 'Story', icon: 'auto_stories' },
                     { id: AppView.IMAGE_STUDIO, label: 'Images', icon: 'palette' },
+                    { id: AppView.INFOGRAPHICS, label: 'Infographics', icon: 'dashboard_customize' },
                     { id: AppView.CHAT, label: 'Chat', icon: 'chat' },
                     { id: AppView.HISTORY, label: 'Library', icon: 'history_edu' }
                 ].map(item => (
@@ -602,8 +607,8 @@ const App: React.FC = () => {
       </nav>
 
       {/* Main Area - Flex-1 to fill remaining space. Chat is overflow-hidden to let internal scroll work. Others scroll here. */}
-      <main className={`flex-1 relative min-h-0 ${view === AppView.CHAT ? 'overflow-hidden flex flex-col' : 'overflow-y-auto scroll-smooth'}`}>
-        {view !== AppView.CHAT ? (
+      <main className={`flex-1 relative min-h-0 ${view === AppView.CHAT || view === AppView.INFOGRAPHICS ? 'overflow-hidden flex flex-col' : 'overflow-y-auto scroll-smooth'}`}>
+        {view !== AppView.CHAT && view !== AppView.INFOGRAPHICS ? (
              <div className="container mx-auto px-4 py-4 md:py-8">
                  {renderContent()}
              </div>

@@ -22,6 +22,7 @@ export enum AppView {
   WIZARD = 'WIZARD',
   STORY_RESULT = 'STORY_RESULT',
   IMAGE_STUDIO = 'IMAGE_STUDIO',
+  INFOGRAPHICS = 'INFOGRAPHICS',
   DASHBOARD = 'DASHBOARD',
   HISTORY = 'HISTORY',
   CHAT = 'CHAT'
@@ -57,6 +58,16 @@ export interface ImageHistoryItem {
   prompt: string;
   imageData: string;
   mode: 'CREATE' | 'EDIT';
+  aspectRatio?: string;
+}
+
+export interface InfographicItem {
+  id: string;
+  title: string;
+  summary: string;
+  visualPrompt: string;
+  imageData?: string;
+  status: 'pending' | 'generating' | 'done' | 'failed';
   aspectRatio?: string;
 }
 

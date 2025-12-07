@@ -1,5 +1,5 @@
-import { GoogleGenAI, GenerateContentResponse, FunctionDeclaration, Type } from "@google/genai";
-import { StoryConfig } from "../types";
+import { GoogleGenAI, GenerateContentResponse, FunctionDeclaration, Type, SchemaType } from "@google/genai";
+import { StoryConfig, InfographicItem } from "../types";
 
 // Initialize the client. API_KEY is injected by the environment.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
@@ -225,6 +225,87 @@ export const editImageVariations = async (imageInput: File | string, prompt: str
  }
  return successful;
 }
+
+/**
+ * Analyzes text content and structures it into infographic sections.
+ */
+export const structureInfographicData = async (text: string, style: string): Promise<InfographicItem[]> => {
+  const prompt = `
+  ROLE: Elite Data Visualization Architect & Information Designer.
+  
+  OBJECTIVE: Transform the input text into a coherent visual narrative consisting of 4-8 high-fidelity infographic tiles.
+  
+  INPUT CONTEXT:
+  """${text.slice(0, 15000)}"""
+
+  DESIGN AESTHETIC: ${style}
+
+  INSTRUCTIONS:
+  1.  **Deconstruct**: Identify the core narrative arc or logical structure of the text (e.g., Problem -> Solution, Chronological Evolution, Component Breakdown).
+  2.  **Select Concepts**: Choose 4-8 key distinct data points, concepts, or steps that drive this narrative.
+  3.  **Visualize**: For each concept, design a specific, complex visual representation. Avoid generic icons. Think in terms of:
+      -   *Systems*: Network graphs, circuit schematics, ecosystem webs.
+      -   *Spatial*: Isometrics, cutaways, cross-sections, exploded views.
+      -   *Comparisons*: Split-screens, before/after blends, scale juxtapositions.
+      -   *Metaphors*: Visual analogies (e.g., "A crumbling bridge" for unstable infrastructure).
+
+  VISUAL PROMPT ENGINEERING (for Nano Banana Pro):
+  -   **Camera & Framing**: Specify the view (e.g., "Low-angle cinematic", "Top-down architectural blueprint", "Macro lens depth of field").
+  -   **Lighting**: Define the mood (e.g., "Bioluminescent glow in dark void", "Harsh industrial floodlights", "Soft warm studio lighting").
+  -   **Materiality**: Describe textures (e.g., "Matte plastic", "Brushed aluminum", "Rough watercolor paper").
+  -   **Complexity**: Demand high detail. Use keywords like "intricate", "hyper-detailed", "data-rich".
+  -   **Text Handling**: The AI cannot spell. Describe text/labels as "abstract data overlays", "floating UI elements", or "illegible glyphs".
+
+  OUTPUT SCHEMA (JSON):
+  Return a JSON object with a property "tiles" which is an array of objects.
+  Each object has: "title", "summary", "visualPrompt".
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+        model: "gemini-3-pro-preview",
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                    tiles: {
+                        type: Type.ARRAY,
+                        items: {
+                            type: Type.OBJECT,
+                            properties: {
+                                title: { type: Type.STRING },
+                                summary: { type: Type.STRING },
+                                visualPrompt: { type: Type.STRING }
+                            },
+                            required: ["title", "summary", "visualPrompt"]
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const jsonText = response.text;
+    if (!jsonText) throw new Error("No JSON response");
+    
+    const data = JSON.parse(jsonText);
+    
+    // Map to internal structure
+    return data.tiles.map((t: any, i: number) => ({
+        id: `info-${Date.now()}-${i}`,
+        title: t.title,
+        summary: t.summary,
+        visualPrompt: t.visualPrompt,
+        status: 'pending'
+    }));
+
+  } catch (e) {
+      console.error("Failed to structure infographic:", e);
+      throw e;
+  }
+};
 
 /**
  * Tool definition for generating images within the chat
