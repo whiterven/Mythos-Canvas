@@ -282,7 +282,7 @@ export const InfographicStudio: React.FC = () => {
     }, [slideIndex, items.length]);
 
     return (
-        <div className="flex flex-col lg:flex-row h-[calc(100vh-50px)] md:h-[calc(100vh-60px)] overflow-hidden gap-0 bg-[#0a0f1c] animate-fade-in relative">
+        <div className="flex flex-col lg:flex-row h-[calc(100dvh-50px)] md:h-[calc(100dvh-60px)] overflow-hidden gap-0 bg-[#0a0f1c] animate-fade-in relative">
             
             {/* Mobile Navigation Tabs */}
             <div className="lg:hidden flex-none flex border-b border-brand-800 bg-[#0f172a] z-30">
@@ -508,7 +508,9 @@ export const InfographicStudio: React.FC = () => {
                                         {item.status === 'done' && item.imageData ? (
                                             <>
                                                 <img src={item.imageData} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-[2px]">
+                                                
+                                                {/* Desktop Overlay Actions */}
+                                                <div className="hidden md:flex absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center gap-3 backdrop-blur-[2px]">
                                                     <button 
                                                         onClick={(e) => handleRegenerate(e, item)}
                                                         className="h-10 w-10 bg-white/10 text-white border border-white/20 rounded-full hover:bg-white hover:text-black hover:scale-110 transition-all shadow-lg flex items-center justify-center backdrop-blur-md"
@@ -544,9 +546,13 @@ export const InfographicStudio: React.FC = () => {
                                         <h4 className="text-base font-bold text-white mb-2 leading-tight pr-4 group-hover:text-brand-gold transition-colors">{item.title}</h4>
                                         <p className="text-xs text-gray-400 leading-relaxed flex-1 line-clamp-3 group-hover:line-clamp-none transition-all duration-300">{item.summary}</p>
                                         
-                                        <div className="mt-4 pt-3 border-t border-white/5 flex justify-between items-center opacity-50 group-hover:opacity-100 transition-opacity">
+                                        {/* Footer / Mobile Actions */}
+                                        <div className="mt-4 pt-3 border-t border-white/5 flex justify-between items-center opacity-70 md:opacity-50 group-hover:opacity-100 transition-opacity">
                                              <span className="text-[10px] font-mono text-gray-500 uppercase">Nano Banana Pro</span>
-                                             <span className="material-symbols-outlined text-gray-500 text-sm">open_in_full</span>
+                                             <span className="flex gap-2">
+                                                <span className="material-symbols-outlined text-gray-400 text-sm md:hidden">open_in_full</span>
+                                                <span className="material-symbols-outlined text-gray-500 text-sm hidden md:block">open_in_full</span>
+                                             </span>
                                         </div>
                                     </div>
                                 </div>
@@ -569,11 +575,18 @@ export const InfographicStudio: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-3">
                              <button 
+                                onClick={(e) => handleRegenerate(e, items[slideIndex])} 
+                                className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/10 transition-colors"
+                                title="Regenerate"
+                            >
+                                <span className="material-symbols-outlined text-xl">refresh</span>
+                            </button>
+                             <button 
                                 onClick={(e) => handleDownload(e, items[slideIndex])} 
                                 className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/10 transition-colors"
                                 title="Download Image"
                             >
-                                <span className="material-symbols-outlined">download</span>
+                                <span className="material-symbols-outlined text-xl">download</span>
                             </button>
                             <button 
                                 onClick={() => setSlideIndex(null)} 
@@ -590,17 +603,17 @@ export const InfographicStudio: React.FC = () => {
                         <button 
                             onClick={(e) => { e.stopPropagation(); setSlideIndex(prev => prev !== null && prev > 0 ? prev - 1 : prev)}}
                             disabled={slideIndex === 0}
-                            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-14 h-14 flex items-center justify-center rounded-full bg-black/20 hover:bg-brand-accent text-white disabled:opacity-0 disabled:pointer-events-none transition-all border border-white/10 backdrop-blur-md z-20 group hover:scale-110"
+                            className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-black/40 hover:bg-brand-accent text-white disabled:opacity-0 disabled:pointer-events-none transition-all border border-white/10 backdrop-blur-md z-20 group hover:scale-110 active:scale-90"
                         >
-                            <span className="material-symbols-outlined text-4xl group-hover:-translate-x-1 transition-transform">chevron_left</span>
+                            <span className="material-symbols-outlined text-3xl md:text-4xl group-hover:-translate-x-1 transition-transform">chevron_left</span>
                         </button>
                         
                         <button 
                             onClick={(e) => { e.stopPropagation(); setSlideIndex(prev => prev !== null && prev < items.length - 1 ? prev + 1 : prev)}}
                             disabled={slideIndex === items.length - 1}
-                            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-14 h-14 flex items-center justify-center rounded-full bg-black/20 hover:bg-brand-accent text-white disabled:opacity-0 disabled:pointer-events-none transition-all border border-white/10 backdrop-blur-md z-20 group hover:scale-110"
+                            className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-black/40 hover:bg-brand-accent text-white disabled:opacity-0 disabled:pointer-events-none transition-all border border-white/10 backdrop-blur-md z-20 group hover:scale-110 active:scale-90"
                         >
-                            <span className="material-symbols-outlined text-4xl group-hover:translate-x-1 transition-transform">chevron_right</span>
+                            <span className="material-symbols-outlined text-3xl md:text-4xl group-hover:translate-x-1 transition-transform">chevron_right</span>
                         </button>
 
                         {/* Image Wrapper with Animation Key */}
@@ -609,7 +622,7 @@ export const InfographicStudio: React.FC = () => {
                                 <img 
                                     src={items[slideIndex].imageData} 
                                     alt={items[slideIndex].title} 
-                                    className="max-h-[70vh] w-auto max-w-[90vw] object-contain shadow-2xl rounded-lg border border-white/5"
+                                    className="max-h-[70vh] w-auto max-w-full md:max-w-[90vw] object-contain shadow-2xl rounded-lg border border-white/5"
                                 />
                             ) : (
                                 <div className="w-64 h-64 flex items-center justify-center bg-white/5 rounded-2xl">
@@ -618,15 +631,15 @@ export const InfographicStudio: React.FC = () => {
                             )}
                             
                             {/* Caption Overlay */}
-                            <div className="mt-8 max-w-3xl text-center px-4">
-                                <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 font-serif">{items[slideIndex].title}</h2>
-                                <p className="text-gray-400 text-base md:text-lg leading-relaxed font-light">{items[slideIndex].summary}</p>
+                            <div className="mt-6 md:mt-8 max-w-3xl text-center px-4">
+                                <h2 className="text-xl md:text-3xl font-bold text-white mb-2 md:mb-3 font-serif">{items[slideIndex].title}</h2>
+                                <p className="text-gray-400 text-sm md:text-lg leading-relaxed font-light line-clamp-3 md:line-clamp-none" onClick={(e) => e.currentTarget.classList.toggle('line-clamp-3')}>{items[slideIndex].summary}</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Filmstrip Thumbnails */}
-                    <div className="h-24 border-t border-white/10 bg-black/40 flex items-center justify-center gap-3 p-3 overflow-x-auto flex-shrink-0 backdrop-blur-md">
+                    <div className="h-20 md:h-24 border-t border-white/10 bg-black/40 flex items-center justify-center gap-3 p-3 overflow-x-auto flex-shrink-0 backdrop-blur-md">
                         {items.map((item, idx) => (
                             <button 
                                 key={item.id}

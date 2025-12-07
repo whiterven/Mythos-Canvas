@@ -241,24 +241,30 @@ export const structureInfographicData = async (text: string, style: string): Pro
   DESIGN AESTHETIC: ${style}
 
   INSTRUCTIONS:
-  1.  **Deconstruct**: Identify the core narrative arc or logical structure of the text (e.g., Problem -> Solution, Chronological Evolution, Component Breakdown).
-  2.  **Select Concepts**: Choose 4-8 key distinct data points, concepts, or steps that drive this narrative.
-  3.  **Visualize**: For each concept, design a specific, complex visual representation. Avoid generic icons. Think in terms of:
-      -   *Systems*: Network graphs, circuit schematics, ecosystem webs.
-      -   *Spatial*: Isometrics, cutaways, cross-sections, exploded views.
-      -   *Comparisons*: Split-screens, before/after blends, scale juxtapositions.
-      -   *Metaphors*: Visual analogies (e.g., "A crumbling bridge" for unstable infrastructure).
+  1.  **Deconstruct**: Identify the core narrative arc. Is it a linear process, a cycle, a comparison, or a network?
+  2.  **Select Concepts**: Choose 4-8 key distinct data points or concepts.
+  3.  **Map Relationships**: For each concept, define how it visually relates to the whole.
+      - *Hierarchy*: Is this a parent, child, or peer node?
+      - *Flow*: Does data flow into or out of this?
+  4.  **Visualize**: Design a complex visual representation for Nano Banana Pro. Avoid generic icons. Use specific metaphors:
+      -   *Network*: "Glowing fiber-optic cables connecting distinct nodes."
+      -   *Layers*: "Geological cross-section showing strata of data."
+      -   *Growth*: "Organic roots spreading into a digital lattice."
+      -   *Scale*: "Macro lens view of a single component vs. wide shot of the system."
 
   VISUAL PROMPT ENGINEERING (for Nano Banana Pro):
-  -   **Camera & Framing**: Specify the view (e.g., "Low-angle cinematic", "Top-down architectural blueprint", "Macro lens depth of field").
-  -   **Lighting**: Define the mood (e.g., "Bioluminescent glow in dark void", "Harsh industrial floodlights", "Soft warm studio lighting").
-  -   **Materiality**: Describe textures (e.g., "Matte plastic", "Brushed aluminum", "Rough watercolor paper").
-  -   **Complexity**: Demand high detail. Use keywords like "intricate", "hyper-detailed", "data-rich".
-  -   **Text Handling**: The AI cannot spell. Describe text/labels as "abstract data overlays", "floating UI elements", or "illegible glyphs".
+  -   **Composition**: Define the camera angle (e.g., "Isometric 45-degree", "Top-down blueprint", "Cinematic low-angle").
+  -   **Lighting & Atmosphere**: "Volumetric fog", "Studio rim lighting", "Bioluminescent pulses".
+  -   **Materiality**: "Glassmorphism", "Brushed titanium", "Hand-drawn ink on parchment".
+  -   **Complexity**: "Hyper-detailed", "Intricate circuitry", "Data-dense HUD".
+  -   **Text Handling**: Describe text as "abstract holographic labels", "floating UI widgets", or "alien glyphs" (AI cannot render readable text).
 
   OUTPUT SCHEMA (JSON):
   Return a JSON object with a property "tiles" which is an array of objects.
-  Each object has: "title", "summary", "visualPrompt".
+  Each object has: 
+  - "title": Short title of the section.
+  - "summary": 1-2 sentence explanation.
+  - "visualPrompt": The highly detailed image generation prompt.
   `;
 
   try {
