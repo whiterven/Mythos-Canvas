@@ -500,7 +500,7 @@ export const StoryWizard: React.FC<Props> = ({ onComplete, onCancel }) => {
     return (
       <div className="max-w-4xl mx-auto p-4 md:p-8 bg-brand-800 rounded-2xl shadow-2xl border border-brand-700 animate-fade-in my-4 md:my-8">
         <h2 className="text-2xl md:text-3xl font-serif text-white mb-2">Manifesto Review</h2>
-        <p className="text-gray-400 mb-6 md:mb-8 border-b border-brand-700 pb-4">Verify your story parameters before initialization.</p>
+        <p className="text-gray-400 mb-6 md:mb-8 border-b border-brand-700 pb-4">Verify or edit your story parameters directly before initialization.</p>
         
         {answers.existingContent && (
              <div className="mb-6 p-4 bg-brand-900/50 rounded-xl border border-brand-700/50">
@@ -511,16 +511,22 @@ export const StoryWizard: React.FC<Props> = ({ onComplete, onCancel }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             {QUESTIONS.map((q) => (
-                <div key={q.id} className="p-3 md:p-4 bg-brand-900/50 rounded-xl border border-brand-700/50 hover:border-brand-600 transition-colors">
-                    <span className="text-brand-accent text-[10px] md:text-xs font-bold uppercase tracking-wider block mb-1">{q.label}</span>
-                    <span className="text-gray-200 font-medium text-sm md:text-base">{(answers[q.id as keyof StoryConfig] as string) || "Not specified"}</span>
+                <div key={q.id} className="p-3 md:p-4 bg-brand-900/50 rounded-xl border border-brand-700/50 hover:border-brand-600 transition-colors group focus-within:border-brand-accent focus-within:ring-1 focus-within:ring-brand-accent/50">
+                    <label htmlFor={`review-${q.id}`} className="text-brand-accent text-[10px] md:text-xs font-bold uppercase tracking-wider block mb-2 cursor-pointer group-focus-within:text-white transition-colors">{q.label}</label>
+                    <textarea 
+                        id={`review-${q.id}`}
+                        value={(answers[q.id as keyof StoryConfig] as string) || ""}
+                        onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                        className="w-full bg-transparent border-none text-gray-200 font-medium text-sm md:text-base focus:outline-none focus:ring-0 p-0 resize-none min-h-[80px] placeholder-gray-600 custom-scrollbar leading-relaxed"
+                        placeholder="Not specified"
+                    />
                 </div>
             ))}
         </div>
         
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t border-brand-700">
             <button onClick={handleBack} className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-sm">
-                <span className="material-symbols-outlined text-base">edit</span> Edit Details
+                <span className="material-symbols-outlined text-base">arrow_back</span> Back to Wizard
             </button>
             <button 
                 onClick={() => onComplete(answers as StoryConfig)} 
