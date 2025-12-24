@@ -1,4 +1,4 @@
-import { GoogleGenAI, GenerateContentResponse, FunctionDeclaration, Type, SchemaType } from "@google/genai";
+import { GoogleGenAI, GenerateContentResponse, FunctionDeclaration, Type } from "@google/genai";
 import { StoryConfig, InfographicItem, LoreEntry } from "../types";
 
 // Initialize the client. API_KEY is injected by the environment.
@@ -60,12 +60,24 @@ export const generateStoryStream = async (
   
   if (isContinuation) {
       prompt += `
-      TASK: CONTINUE the following story. Match the existing tone and style perfectly, but elevate the prose quality if needed.
+      TASK: CONTINUE the story. You are writing the NEXT chapter or segment. 
       
-      EXISTING CONTENT:
+      CRITICAL INSTRUCTIONS FOR CONTINUATION:
+      1.  Read the "EXISTING CONTENT" below to understand the plot, tone, and current cliffhanger.
+      2.  Do NOT rewrite the existing content. Start EXACTLY where it left off.
+      3.  Do NOT rush to a conclusion unless the "Ending Type" specifically demands it now. If the user asked for a 20-chapter book and we are on chapter 2, simply write Chapter 3.
+      4.  Maintain absolute consistency with the narrative voice established below.
+      
+      EXISTING CONTENT (The Story So Far):
       """
       ${config.existingContent}
       """
+      
+      OUTPUT FORMAT:
+      Start immediately with the text of the next scene/chapter.
+      Example:
+      ## Chapter [Next Number]: [Title]
+      [Prose...]
       `;
   } else {
       prompt += `
@@ -81,14 +93,14 @@ export const generateStoryStream = async (
     - Narrative Style: ${config.narrativeStyle}
     - Target Audience: ${config.targetAudience}
     - Length/Structure: ${config.lengthStructure}
-    - Chapter Count: ${config.chapterCount} (Segment strictly into this many chapters).
+    - Chapter Count: ${config.chapterCount} (If this is a long book, PACE YOURSELF. Do not fit everything into one response).
     - Key Elements: ${config.keyElements}
     - Complexity: ${config.complexity}
     - Ending Type: ${config.endingType}
     - Constraints: ${config.constraints}
 
     OUTPUT FORMAT:
-    ${isContinuation ? '## Chapter [Next]: [Title]' : '# [Story Title]\n\n## Chapter 1: [Title]'}
+    ${isContinuation ? '(See Continuation Instructions above)' : '# [Story Title]\n\n## Chapter 1: [Title]'}
     [Content]
     ...
   `;

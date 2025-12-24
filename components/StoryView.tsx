@@ -22,6 +22,7 @@ interface Props {
   isStreaming: boolean;
   onUpdate?: (newContent: string) => void;
   onLoreUpdate?: (newLore: LoreEntry[]) => void; // Callback to save lore
+  onContinue?: () => void; // New callback for infinite generation
 }
 
 const CHARS_PER_PAGE = 1200; 
@@ -211,7 +212,7 @@ const EditableBlock: React.FC<EditableBlockProps> = ({ content, onUpdate, onIllu
     );
 };
 
-export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isStreaming, onUpdate, onLoreUpdate }) => {
+export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isStreaming, onUpdate, onLoreUpdate, onContinue }) => {
   const [mode, setMode] = useState<'READER' | 'STUDIO' | 'EXPORT' | 'LORE'>('READER');
   const [pages, setPages] = useState<PageData[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -377,12 +378,19 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
                 if (exportOptions.includeImages) {
                     const imgMatch = trimmed.match(/^!\[(.*?)\]\((data:image\/.*?;base64,.*?)\)$/);
                     if (imgMatch) {
-                        const imageBuffer = base64ToUint8Array(imgMatch[2]);
+                        const base64Data = imgMatch[2];
+                        const imageBuffer = base64ToUint8Array(base64Data);
+                        
+                        // Infer type for docx
+                        const mime = base64Data.split(';')[0].split(':')[1];
+                        const type = mime.includes('jpeg') || mime.includes('jpg') ? 'jpg' : 'png';
+
                         docChildren.push(new Paragraph({
                             children: [
                                 new ImageRun({
                                     data: imageBuffer,
-                                    transformation: { width: 500, height: 300 }
+                                    transformation: { width: 500, height: 300 },
+                                    type: type as "png" | "jpg"
                                 })
                             ],
                             alignment: AlignmentType.CENTER,
@@ -408,10 +416,9 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
                             new Paragraph({
                                 alignment: AlignmentType.CENTER,
                                 children: [
-                                    new TextRun("Page "),
-                                    PageNumber.CURRENT,
-                                    new TextRun(" of "),
-                                    PageNumber.TOTAL_PAGES,
+                                    new TextRun({
+                                        children: ["Page ", PageNumber.CURRENT, " of ", PageNumber.TOTAL_PAGES],
+                                    }),
                                 ],
                             }),
                         ],
@@ -732,7 +739,7 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
 
         {/* --- STUDIO MODE (Writer) --- */}
         {mode === 'STUDIO' && (
-            <div className="w-full max-w-3xl flex-1 bg-[#1e2330] rounded-xl border border-brand-700 shadow-2xl p-8 md:p-12 overflow-y-auto min-h-[80vh] animate-fade-in">
+            <div className="w-full max-w-3xl flex-1 bg-[#1e2330] rounded-xl border border-brand-700 shadow-2xl p-8 md:p-12 overflow-y-auto min-h-[80vh] animate-fade-in relative">
                 <div className="mb-8 pb-4 border-b border-brand-700/50 flex justify-between items-end">
                     <div>
                         <h2 className="text-2xl font-serif text-white font-bold">{storyTitle}</h2>
@@ -741,7 +748,7 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
                     {isStreaming && <span className="text-brand-gold animate-pulse text-sm font-bold flex items-center gap-1"><span className="material-symbols-outlined text-base">edit</span> Generating...</span>}
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-2 pb-20">
                     {blocks.map((block, idx) => (
                         <div key={idx} id={`block-${idx}`}>
                             <EditableBlock 
@@ -759,6 +766,22 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
                             <span className="material-symbols-outlined text-base">add_circle</span> Add Paragraph
                         </button>
                     </div>
+
+                    {/* Continuation Button (Studio) */}
+                     <div className="mt-8 pt-4 border-t border-brand-700/50 flex justify-center">
+                         <button
+                             onClick={onContinue}
+                             disabled={isStreaming}
+                             className="group bg-brand-800 hover:bg-brand-accent border border-brand-700 hover:border-brand-accent px-6 py-3 rounded-xl transition-all flex items-center gap-3 text-white font-serif disabled:opacity-50 disabled:cursor-not-allowed"
+                         >
+                             {isStreaming ? (
+                                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                             ) : (
+                                 <span className="material-symbols-outlined group-hover:rotate-180 transition-transform">auto_awesome</span>
+                             )}
+                             <span>Weave Next Chapter</span>
+                         </button>
+                     </div>
                 </div>
             </div>
         )}
@@ -1040,11 +1063,29 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
                                     <div className="pt-6">
                                         <RichTextRenderer text={activePage.content} />
                                     </div>
-                                    {isStreaming && currentPage === pages.length - 1 && (
-                                        <div className="mt-4 flex justify-center opacity-50">
-                                            <span className="text-2xl text-brand-gold animate-bounce">...</span>
+                                    
+                                    {/* Continuation Button (Reader Mode) */}
+                                    {currentPage === pages.length - 1 && (
+                                        <div className="mt-8 mb-4 flex justify-center">
+                                            {isStreaming ? (
+                                                <div className="flex gap-2 items-center text-brand-gold font-serif italic">
+                                                    <span className="w-2 h-2 bg-brand-gold rounded-full animate-bounce"></span>
+                                                    <span className="w-2 h-2 bg-brand-gold rounded-full animate-bounce delay-75"></span>
+                                                    <span className="w-2 h-2 bg-brand-gold rounded-full animate-bounce delay-150"></span>
+                                                    <span>Weaving...</span>
+                                                </div>
+                                            ) : (
+                                                 <button
+                                                     onClick={onContinue}
+                                                     className="group bg-brand-800/10 hover:bg-brand-800/20 text-brand-900 border border-brand-800/30 px-6 py-2 rounded-full font-serif text-sm transition-all flex items-center gap-2 hover:shadow-md"
+                                                 >
+                                                     <span>Weave Next Chapter</span>
+                                                     <span className="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">auto_awesome</span>
+                                                 </button>
+                                            )}
                                         </div>
                                     )}
+
                                     <PageFooter num={activePage.pageNumber} />
                                 </div>
                             </div>
@@ -1082,6 +1123,24 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
                         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-b from-black/5 to-transparent"></div>
                         <div className="flex-1">
                             {activePage && <RichTextRenderer text={activePage.content} />}
+                            {/* Continuation Button (Mobile) */}
+                            {currentPage === pages.length - 1 && (
+                                <div className="mt-8 mb-4 flex justify-center">
+                                    {isStreaming ? (
+                                        <div className="flex gap-2 items-center text-brand-gold font-serif italic">
+                                            <span>Weaving...</span>
+                                        </div>
+                                    ) : (
+                                            <button
+                                                onClick={onContinue}
+                                                className="bg-brand-800/10 text-brand-900 border border-brand-800/30 px-4 py-2 rounded-full font-serif text-sm transition-all flex items-center gap-2"
+                                            >
+                                                <span>Next Chapter</span>
+                                                <span className="material-symbols-outlined text-base">auto_awesome</span>
+                                            </button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                         <div className="flex justify-between mt-6 pt-4 border-t border-gray-300/50">
                             <button 

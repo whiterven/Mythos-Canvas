@@ -113,6 +113,42 @@ const App: React.FC = () => {
     }
   };
 
+  const handleStoryContinue = async () => {
+    if (!generatedStory || !activeStoryId) return;
+
+    const currentHistoryItem = history.find(h => h.id === activeStoryId);
+    if (!currentHistoryItem) return;
+
+    setIsGenerating(true);
+    
+    // Create a new temporary config that treats the *entire* current story as "existingContent"
+    // This forces the AI to read everything so far and continue from the end.
+    const continueConfig: StoryConfig = {
+        ...currentHistoryItem.config,
+        existingContent: generatedStory
+    };
+
+    let appendedText = "";
+    
+    try {
+        await generateStoryStream(continueConfig, (chunk) => {
+             // chunk is only the NEW text.
+             // We want to see the old text + growing new text
+             appendedText = chunk;
+             setGeneratedStory(generatedStory + "\n\n" + appendedText);
+        });
+
+        const finalFullText = generatedStory + "\n\n" + appendedText;
+        saveToHistory(finalFullText, currentHistoryItem.config, activeLore, activeStoryId);
+
+    } catch (e) {
+        console.error("Continuation failed", e);
+        alert("Failed to weave the next chapter.");
+    } finally {
+        setIsGenerating(false);
+    }
+  };
+
   const handleStoryUpdate = (newContent: string) => {
       setGeneratedStory(newContent);
       // Auto-save edits if we have an active story ID
@@ -202,6 +238,7 @@ const App: React.FC = () => {
                 isStreaming={isGenerating}
                 onUpdate={handleStoryUpdate}
                 onLoreUpdate={handleLoreUpdate}
+                onContinue={handleStoryContinue}
             />
         );
       case AppView.IMAGE_STUDIO:
