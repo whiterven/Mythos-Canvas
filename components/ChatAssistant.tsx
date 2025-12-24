@@ -551,13 +551,6 @@ export const ChatSection: React.FC = () => {
       });
   };
 
-  const suggestions = [
-      "Ideas for rat detective sequels",
-      "Prompts for fantasy world-building",
-      "Character flaws for a paladin",
-      "Plot twist involving time travel"
-  ];
-
   return (
     <div className="flex h-full w-full bg-[#0f172a] overflow-hidden relative font-sans">
       
@@ -647,19 +640,6 @@ export const ChatSection: React.FC = () => {
                      </div>
                      <h2 className="text-xl md:text-2xl font-serif text-white mb-2">Hey! What's up?</h2>
                      <p className="text-sm text-gray-500 mb-8 max-w-xs md:max-w-none mx-auto">Ready to craft another epic story, brainstorm, or analyze images?</p>
-                     
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full text-left max-w-lg">
-                        {suggestions.map((s, i) => (
-                            <button 
-                                key={i}
-                                onClick={() => handleSend(s)}
-                                className="px-3 py-3 bg-brand-800/20 hover:bg-brand-800/50 border border-gray-700/50 hover:border-brand-600 rounded-xl text-xs md:text-sm text-gray-400 hover:text-white transition-all flex items-center gap-3 group active:scale-[0.98] min-h-[50px]"
-                            >
-                                <span className="material-symbols-outlined text-brand-accent/70 text-sm group-hover:text-brand-accent">subdirectory_arrow_right</span>
-                                {s}
-                            </button>
-                        ))}
-                     </div>
                 </div>
             ) : (
                 <div className="flex flex-col w-full max-w-3xl mx-auto pt-4 pb-2 px-2 md:px-0">

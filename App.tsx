@@ -333,30 +333,52 @@ const App: React.FC = () => {
         return (
           <div className="animate-fade-in pb-12">
             {/* Hero Section */}
-            <div className="relative rounded-3xl overflow-hidden bg-brand-800 border border-brand-700 p-6 md:p-20 text-center mb-8 md:mb-12 shadow-2xl">
-              <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-20 pointer-events-none">
-                 <div className="absolute top-[-50%] left-[-20%] w-[80%] h-[200%] bg-brand-accent/30 rotate-12 blur-3xl rounded-full mix-blend-screen"></div>
-                 <div className="absolute bottom-[-50%] right-[-20%] w-[80%] h-[200%] bg-brand-gold/20 -rotate-12 blur-3xl rounded-full mix-blend-screen"></div>
-              </div>
-              
-              <div className="relative z-10">
-                <span className="inline-block py-1 px-3 rounded-full bg-brand-900/50 border border-brand-700 text-brand-gold text-[10px] md:text-xs font-bold tracking-widest uppercase mb-4 md:mb-6">Powered by Strong Mind</span>
-                <h1 className="text-4xl md:text-7xl font-serif font-bold text-white mb-4 md:mb-6 tracking-tight drop-shadow-xl leading-tight">
-                  Where <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-brand-accent">Myth</span> Meets <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-purple-400">Matter</span>
-                </h1>
-                <p className="text-base md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed font-light mb-8 md:mb-10">
-                  The comprehensive creative studio for the AI age. Craft award-winning narratives with deep reasoning or transform visuals instantly with natural language.
-                </p>
-                
-                <div className="flex flex-col md:flex-row justify-center gap-3 md:gap-4">
-                  <button onClick={() => handleNav(AppView.WIZARD)} className="bg-brand-accent hover:bg-indigo-500 text-white px-6 py-3 md:px-8 md:py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-indigo-500/25 flex items-center justify-center gap-2">
-                    Start a Story <span className="material-symbols-outlined">arrow_forward</span>
-                  </button>
-                  <button onClick={() => { setSelectedImageToEdit(null); handleNav(AppView.IMAGE_STUDIO); }} className="bg-brand-800 hover:bg-brand-700 border border-brand-700 text-white px-6 py-3 md:px-8 md:py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2">
-                    Open Studio <span className="material-symbols-outlined">palette</span>
-                  </button>
+            <div className="relative rounded-[2.5rem] overflow-hidden bg-[#0f172a] border border-white/5 p-8 md:p-24 text-center mb-12 shadow-2xl isolate group">
+                {/* Animated Background Mesh */}
+                <div className="absolute inset-0 -z-10 overflow-hidden bg-[#0f172a]">
+                    <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-brand-accent/20 rounded-full blur-[120px] mix-blend-screen animate-pulse"></div>
+                    <div className="absolute bottom-[-10%] right-[20%] w-[500px] h-[500px] bg-brand-gold/10 rounded-full blur-[100px] mix-blend-screen"></div>
+                    {/* Subtle Grid */}
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_100%)]"></div>
                 </div>
-              </div>
+
+                {/* Content */}
+                <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8 transition-transform hover:scale-105 cursor-default">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-gold opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-gold"></span>
+                        </span>
+                        <span className="text-[10px] md:text-xs font-bold tracking-widest text-gray-300 uppercase">Powered by Strong Mind</span>
+                    </div>
+
+                    <h1 className="text-5xl md:text-8xl font-serif font-bold text-white mb-6 tracking-tight leading-[1.1] drop-shadow-sm">
+                        Where <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-yellow-200 to-brand-accent italic pr-2">Myth</span>
+                        Meets <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent via-indigo-300 to-purple-400 italic">Matter</span>
+                    </h1>
+
+                    <p className="text-base md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed font-light mb-10 md:mb-14">
+                        The definitive creative studio. Weave complex, multi-layered narratives with deep reasoning or summon high-fidelity visuals instantly.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
+                        <button 
+                            onClick={() => handleNav(AppView.WIZARD)} 
+                            className="group relative px-8 py-4 bg-white text-brand-900 rounded-full font-bold text-sm md:text-base transition-all hover:bg-gray-100 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] active:scale-95 flex items-center gap-2 min-w-[200px] justify-center"
+                        >
+                            Start Creating
+                            <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </button>
+                        
+                        <button 
+                            onClick={() => { setSelectedImageToEdit(null); handleNav(AppView.IMAGE_STUDIO); }} 
+                            className="group px-8 py-4 bg-white/5 text-white border border-white/10 rounded-full font-medium text-sm md:text-base transition-all hover:bg-white/10 hover:border-white/20 active:scale-95 flex items-center gap-2 min-w-[200px] justify-center backdrop-blur-sm"
+                        >
+                            <span className="material-symbols-outlined text-lg group-hover:rotate-12 transition-transform">palette</span>
+                            Open Studio
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {/* Main Cards */}
