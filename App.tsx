@@ -689,7 +689,7 @@ const App: React.FC = () => {
       </nav>
 
       {/* Main Area - Flex-1 to fill remaining space. Chat is overflow-hidden to let internal scroll work. Others scroll here. */}
-      <main className={`flex-1 relative min-h-0 ${view === AppView.CHAT || view === AppView.INFOGRAPHICS ? 'overflow-hidden flex flex-col' : 'overflow-y-auto scroll-smooth'}`}>
+      <main className={`flex-1 relative min-h-0 ${view === AppView.CHAT || view === AppView.INFOGRAPHICS ? 'overflow-hidden flex flex-col' : 'overflow-y-auto scroll-smooth overflow-x-hidden'}`}>
         {view !== AppView.CHAT && view !== AppView.INFOGRAPHICS ? (
              <div className="container mx-auto px-4 py-4 md:py-8">
                  {renderContent()}
@@ -717,4 +717,5 @@ const App: React.FC = () => {
     </div>
   );
 };
+
 export default App;

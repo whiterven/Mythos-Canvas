@@ -577,7 +577,7 @@ export const StoryWizard: React.FC<Props> = ({ onComplete, onCancel }) => {
   // Lore / World Bible View (New Step)
   if (step === QUESTIONS.length + 1) {
       return (
-        <div className="max-w-6xl mx-auto p-4 md:p-8 animate-fade-in my-4 md:my-8 h-[85vh] min-h-[600px] flex flex-col">
+        <div className="max-w-6xl mx-auto p-4 md:p-8 animate-fade-in my-4 md:my-8 h-auto lg:h-[85vh] min-h-0 flex flex-col">
             <div className="mb-6 flex-none">
                 <h2 className="text-3xl font-serif text-white mb-2 flex items-center gap-2">
                     <span className="material-symbols-outlined text-brand-gold text-3xl">public</span>
@@ -586,9 +586,9 @@ export const StoryWizard: React.FC<Props> = ({ onComplete, onCancel }) => {
                 <p className="text-gray-400 text-sm">Define characters, locations, items, and rules. The AI will strictly adhere to these facts.</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 lg:min-h-0">
                 {/* Form Side - Enhanced Visibility */}
-                <div className="lg:col-span-4 flex flex-col gap-4 bg-brand-800 p-6 rounded-2xl border border-brand-700 h-full overflow-y-auto shadow-xl relative custom-scrollbar">
+                <div className="lg:col-span-4 flex flex-col gap-4 bg-brand-800 p-6 rounded-2xl border border-brand-700 h-auto lg:h-full lg:overflow-y-auto shadow-xl relative custom-scrollbar order-1">
                     {/* Subtle Gradient Accent at Top */}
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-accent to-brand-gold rounded-t-2xl opacity-50"></div>
                     
@@ -636,7 +636,7 @@ export const StoryWizard: React.FC<Props> = ({ onComplete, onCancel }) => {
                             value={tempLoreDesc}
                             onChange={(e) => setTempLoreDesc(e.target.value)}
                             placeholder="Describe appearance, personality, hidden properties, or strict rules..."
-                            className="w-full h-48 bg-brand-900 border border-brand-600/50 rounded-xl p-3.5 text-white placeholder-gray-500 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold/50 outline-none resize-none transition-all shadow-inner leading-relaxed"
+                            className="w-full h-32 md:h-48 bg-brand-900 border border-brand-600/50 rounded-xl p-3.5 text-white placeholder-gray-500 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold/50 outline-none resize-none transition-all shadow-inner leading-relaxed"
                         />
                     </div>
 
@@ -650,7 +650,7 @@ export const StoryWizard: React.FC<Props> = ({ onComplete, onCancel }) => {
                 </div>
 
                 {/* List Side */}
-                <div className="lg:col-span-8 flex flex-col bg-brand-800 p-6 rounded-2xl border border-brand-700 h-full">
+                <div className="lg:col-span-8 flex flex-col bg-brand-800 p-6 rounded-2xl border border-brand-700 h-[500px] lg:h-full order-2">
                     <div className="flex justify-between items-center mb-4 border-b border-brand-700 pb-2 flex-none">
                         <h3 className="text-white font-bold flex items-center gap-2">
                             <span className="material-symbols-outlined text-brand-gold">library_books</span> Bible Entries

@@ -520,17 +520,17 @@ export const ImageStudio: React.FC<Props> = ({ initialImage }) => {
                             <span className="material-symbols-outlined text-xs">filter_none</span> 
                             Variations
                         </p>
-                        <div className="flex bg-brand-900/50 p-1 rounded-lg border border-brand-700 h-[66px]">
+                        <div className="flex bg-brand-900/50 p-1 rounded-lg border border-brand-700 h-auto py-2 md:py-1 md:h-[66px]"> {/* Made height responsive */}
                              <button 
                                 onClick={() => setVariationCount(1)}
-                                className={`flex-1 rounded-md flex flex-col items-center justify-center text-[10px] font-bold gap-1 transition-all ${variationCount === 1 ? 'bg-brand-700 text-white shadow' : 'text-gray-400 hover:text-gray-200'}`}
+                                className={`flex-1 rounded-md flex flex-col items-center justify-center text-[10px] font-bold gap-1 transition-all py-2 md:py-0 ${variationCount === 1 ? 'bg-brand-700 text-white shadow' : 'text-gray-400 hover:text-gray-200'}`}
                              >
                                  <span className="material-symbols-outlined text-lg">image</span>
                                  1 Image
                              </button>
                              <button 
                                 onClick={() => setVariationCount(4)}
-                                className={`flex-1 rounded-md flex flex-col items-center justify-center text-[10px] font-bold gap-1 transition-all ${variationCount === 4 ? 'bg-brand-700 text-white shadow' : 'text-gray-400 hover:text-gray-200'}`}
+                                className={`flex-1 rounded-md flex flex-col items-center justify-center text-[10px] font-bold gap-1 transition-all py-2 md:py-0 ${variationCount === 4 ? 'bg-brand-700 text-white shadow' : 'text-gray-400 hover:text-gray-200'}`}
                              >
                                  <span className="material-symbols-outlined text-lg">grid_view</span>
                                  4 Variations
@@ -671,7 +671,7 @@ export const ImageStudio: React.FC<Props> = ({ initialImage }) => {
             {variations.length > 0 && (
                 <div className="animate-fade-in">
                     <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-2">Variations</p>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2"> {/* Responsive grid */}
                         {variations.map((v, idx) => (
                             <div 
                                 key={idx} 
