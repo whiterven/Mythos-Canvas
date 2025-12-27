@@ -66,6 +66,12 @@ export interface PublishingConfig {
     bodyFont: string;
     fontSize: number;
     dropCaps: boolean;
+    // Advanced Layout Features
+    lineHeight: number;
+    alignment: 'left' | 'justify';
+    sceneDivider: 'asterisk' | 'line' | 'flourish' | 'diamond';
+    header: 'title-author' | 'chapter' | 'none';
+    footer: 'page-num' | 'none';
   };
   metadata: {
     author: string;
