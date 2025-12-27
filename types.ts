@@ -1,3 +1,4 @@
+
 export interface LoreEntry {
   id: string;
   name: string;
@@ -31,6 +32,7 @@ export enum AppView {
   STORY_RESULT = 'STORY_RESULT',
   IMAGE_STUDIO = 'IMAGE_STUDIO',
   INFOGRAPHICS = 'INFOGRAPHICS',
+  PUBLISHER = 'PUBLISHER',
   DASHBOARD = 'DASHBOARD',
   HISTORY = 'HISTORY',
   CHAT = 'CHAT'
@@ -51,6 +53,34 @@ export interface ChatSession {
   messages: ChatMessage[];
 }
 
+export interface PublishingConfig {
+  coverImage?: string; // Base64
+  coverStyle?: string;
+  coverResolution?: '1K' | '2K' | '4K';
+  backCoverBlurb?: string;
+  includeTOC?: boolean;
+  paperSize?: '5x8' | '6x9' | 'A5' | 'A4' | 'Letter';
+  margins?: 'narrow' | 'normal' | 'wide';
+  layout: {
+    headingFont: string;
+    bodyFont: string;
+    fontSize: number;
+    dropCaps: boolean;
+  };
+  metadata: {
+    author: string;
+    dedication: string;
+    copyright: string;
+    isbn?: string;
+  };
+  extraSections: {
+    id: string;
+    title: string;
+    content: string;
+    type: 'preface' | 'epilogue' | 'custom';
+  }[];
+}
+
 export interface HistoryItem {
   id: string;
   timestamp: number;
@@ -59,6 +89,7 @@ export interface HistoryItem {
   content: string;
   config: StoryConfig;
   lore: LoreEntry[];
+  publishingConfig?: PublishingConfig;
 }
 
 export interface ImageHistoryItem {

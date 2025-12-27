@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { PageData, LoreEntry } from '../types';
 import { 
@@ -354,14 +355,14 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
               );
           }
 
+          // Full Content Iteration
           for (const block of blocks) {
             const trimmed = block.trim();
             if (!trimmed) continue;
 
+            // Handle Headings
             if (trimmed.startsWith('# ')) {
-                // Title is usually redundant with cover page, but if no cover, we can keep it.
-                // Or if user wants chapters.
-                // Assuming # matches main title, so we might skip it if cover is active, but keeping for now as H1.
+                // Main Title (often redundant if cover page exists, but included for completeness as H1)
                 docChildren.push(new Paragraph({
                     text: trimmed.replace('# ', ''),
                     heading: HeadingLevel.HEADING_1,
@@ -369,12 +370,23 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
                     spacing: { after: 300, before: 300 }
                 }));
             } else if (trimmed.startsWith('## ')) {
+                 // Chapter Heading - Add Page Break for new chapters
                  docChildren.push(new Paragraph({
                     text: trimmed.replace('## ', ''),
                     heading: HeadingLevel.HEADING_2,
-                    spacing: { after: 200, before: 400 }
+                    pageBreakBefore: true,
+                    alignment: AlignmentType.CENTER,
+                    spacing: { after: 400, before: 400 }
                 }));
-            } else if (trimmed.startsWith('![')) {
+            } else if (trimmed.startsWith('### ')) {
+                 docChildren.push(new Paragraph({
+                    text: trimmed.replace('### ', ''),
+                    heading: HeadingLevel.HEADING_3,
+                    spacing: { after: 200, before: 200 }
+                }));
+            } 
+            // Handle Images
+            else if (trimmed.startsWith('![')) {
                 if (exportOptions.includeImages) {
                     const imgMatch = trimmed.match(/^!\[(.*?)\]\((data:image\/.*?;base64,.*?)\)$/);
                     if (imgMatch) {
@@ -389,7 +401,7 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
                             children: [
                                 new ImageRun({
                                     data: imageBuffer,
-                                    transformation: { width: 500, height: 300 },
+                                    transformation: { width: 500, height: 300 }, // Max constraint
                                     type: type as "png" | "jpg"
                                 })
                             ],
@@ -398,10 +410,19 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
                         }));
                     }
                 }
-            } else {
+            } 
+            // Handle Standard Text
+            else {
+                 // Clean up markdown bold/italic for plain text export if not using rich text parser
+                 const cleanText = trimmed.replace(/\*\*/g, '').replace(/\*/g, '');
                  docChildren.push(new Paragraph({
-                    children: [new TextRun({ text: trimmed.replace(/\*\*/g, '').replace(/\*/g, ''), size: exportOptions.fontSize * 2 })], // Docx size is half-points
-                    spacing: { after: 200 }
+                    children: [new TextRun({ 
+                        text: cleanText, 
+                        size: exportOptions.fontSize * 2, // DOCX uses half-points
+                        font: "Merriweather" // Enforce serif for story text
+                    })],
+                    spacing: { after: 240, line: 360 }, // 1.5 line spacing equivalent
+                    alignment: AlignmentType.JUSTIFIED
                 }));
             }
           }
@@ -417,7 +438,7 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
                                 alignment: AlignmentType.CENTER,
                                 children: [
                                     new TextRun({
-                                        children: ["Page ", PageNumber.CURRENT, " of ", PageNumber.TOTAL_PAGES],
+                                        children: ["- ", PageNumber.CURRENT, " -"],
                                     }),
                                 ],
                             }),
@@ -444,7 +465,6 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
 
   const handleExportPdf = () => {
       setIsExporting(true);
-      // Timeout to allow UI state to update before blocking main thread
       setTimeout(() => {
           try {
               const doc = new jsPDF();
@@ -478,6 +498,7 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
                   y = margin;
               }
 
+              // Full Content Iteration
               blocks.forEach(block => {
                   const trimmed = block.trim();
                   if (!trimmed) return;
@@ -491,11 +512,23 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
                       doc.text(splitTitle, pageWidth / 2, y, { align: 'center' });
                       y += (splitTitle.length * 12) + 15;
                   } else if (trimmed.startsWith('## ')) {
+                      // Chapter Heading - Force new page if we are far down, or just spacing
+                      if (y > margin + 40) { // If not at top
+                          doc.addPage();
+                          y = margin + 20;
+                      }
+                      
                       doc.setFont("times", "bold");
                       doc.setFontSize(18);
                       const text = trimmed.replace('## ', '');
-                      checkPageBreak(30);
-                      y += 10;
+                      const splitTitle = doc.splitTextToSize(text, contentWidth);
+                      doc.text(splitTitle, pageWidth / 2, y, { align: 'center' });
+                      y += (splitTitle.length * 10) + 15;
+                  } else if (trimmed.startsWith('### ')) {
+                      doc.setFont("times", "bold");
+                      doc.setFontSize(14);
+                      const text = trimmed.replace('### ', '');
+                      checkPageBreak(20);
                       doc.text(text, margin, y);
                       y += 15;
                   } else if (trimmed.startsWith('![')) {
@@ -509,22 +542,27 @@ export const StoryView: React.FC<Props> = ({ content, initialLore, onReset, isSt
                                checkPageBreak(imgH + 20);
                                
                                const x = margin + (contentWidth - imgW) / 2;
-                               doc.addImage(base64, 'PNG', x, y, imgW, imgH);
-                               y += imgH + 20;
+                               try {
+                                   doc.addImage(base64, 'PNG', x, y, imgW, imgH);
+                                   y += imgH + 20;
+                               } catch (err) {
+                                   console.warn("Failed to add image to PDF", err);
+                               }
                            }
                        }
                   } else {
                       doc.setFont("times", "normal");
                       doc.setFontSize(exportOptions.fontSize);
                       
+                      // Clean markdown
                       const cleanText = trimmed.replace(/\*\*/g, '').replace(/\*/g, '').replace(/`/g, '');
                       const splitText = doc.splitTextToSize(cleanText, contentWidth);
-                      const lineHeight = exportOptions.fontSize * 0.5; // Approx
-                      const blockHeight = splitText.length * (lineHeight + 2);
+                      const lineHeight = exportOptions.fontSize * 0.5; // Approx factor
+                      const blockHeight = splitText.length * (lineHeight + 3); // Spacing
                       
-                      checkPageBreak(blockHeight + 10);
+                      checkPageBreak(blockHeight + 5);
                       doc.text(splitText, margin, y);
-                      y += blockHeight + 10;
+                      y += blockHeight + 5; // Paragraph spacing
                   }
               });
 

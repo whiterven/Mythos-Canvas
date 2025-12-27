@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, GenerateContentResponse, FunctionDeclaration, Type } from "@google/genai";
 import { StoryConfig, InfographicItem, LoreEntry } from "../types";
 
@@ -131,22 +132,47 @@ export const generateStoryStream = async (
   }
 };
 
+interface GenerateImageOptions {
+    aspectRatio?: string;
+    model?: string;
+    imageSize?: '1K' | '2K' | '4K';
+}
+
 /**
- * Generates an image from text using gemini-2.5-flash-image (Nano Banana).
+ * Generates an image from text. Defaults to gemini-2.5-flash-image but supports upgrades.
+ * Now supports imageSize configuration for 3-pro models.
  */
-export const generateImage = async (prompt: string, aspectRatio: string = "1:1"): Promise<string> => {
+export const generateImage = async (prompt: string, options?: string | GenerateImageOptions): Promise<string> => {
+  let aspectRatio = "1:1";
+  let model = "gemini-2.5-flash-image";
+  let imageSize: string | undefined = undefined;
+
+  if (typeof options === 'string') {
+      aspectRatio = options;
+  } else if (options) {
+      aspectRatio = options.aspectRatio || "1:1";
+      model = options.model || "gemini-2.5-flash-image";
+      imageSize = options.imageSize;
+  }
+
   try {
-    // According to guidelines, use generateContent for Nano Banana models
+    const config: any = {
+        imageConfig: {
+            aspectRatio: aspectRatio
+        }
+    };
+    
+    // Only add imageSize if defined (only supported on specific models like gemini-3-pro-image-preview)
+    if (imageSize) {
+        config.imageConfig.imageSize = imageSize;
+    }
+
     const response: GenerateContentResponse = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
+      model: model,
       contents: {
         parts: [{ text: prompt }]
       },
-      config: {
-          imageConfig: {
-              aspectRatio: aspectRatio
-          }
-      }
+      config: config
     });
 
     // Iterate to find the image part in the response
@@ -167,8 +193,8 @@ export const generateImage = async (prompt: string, aspectRatio: string = "1:1")
 /**
  * Generates multiple image variations in parallel.
  */
-export const generateImageVariations = async (prompt: string, aspectRatio: string = "1:1", count: number = 4): Promise<string[]> => {
-  const promises = Array.from({ length: count }, () => generateImage(prompt, aspectRatio));
+export const generateImageVariations = async (prompt: string, options?: string | GenerateImageOptions, count: number = 4): Promise<string[]> => {
+  const promises = Array.from({ length: count }, () => generateImage(prompt, options));
   
   const results = await Promise.allSettled(promises);
   

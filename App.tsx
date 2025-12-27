@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { AppView, StoryConfig, HistoryItem, ImageHistoryItem, LoreEntry } from './types';
 import { StoryWizard } from './components/StoryWizard';
@@ -5,6 +6,7 @@ import { StoryView } from './components/StoryView';
 import { ImageStudio } from './components/ImageStudio';
 import { ChatSection } from './components/ChatAssistant';
 import { InfographicStudio } from './components/InfographicStudio';
+import { PublisherStudio } from './components/PublisherStudio';
 import { generateStoryStream } from './services/geminiService';
 
 const App: React.FC = () => {
@@ -81,6 +83,12 @@ const App: React.FC = () => {
     return id;
   };
 
+  const updateHistoryItem = (id: string, updates: Partial<HistoryItem>) => {
+      const newHistory = history.map(h => h.id === id ? { ...h, ...updates } : h);
+      setHistory(newHistory);
+      localStorage.setItem('mythos_history', JSON.stringify(newHistory));
+  };
+
   const handleStoryComplete = async (config: StoryConfig) => {
     setIsGenerating(true);
     setActiveStoryId(null); // Reset active ID for new story
@@ -121,8 +129,6 @@ const App: React.FC = () => {
 
     setIsGenerating(true);
     
-    // Create a new temporary config that treats the *entire* current story as "existingContent"
-    // This forces the AI to read everything so far and continue from the end.
     const continueConfig: StoryConfig = {
         ...currentHistoryItem.config,
         existingContent: generatedStory
@@ -132,8 +138,6 @@ const App: React.FC = () => {
     
     try {
         await generateStoryStream(continueConfig, (chunk) => {
-             // chunk is only the NEW text.
-             // We want to see the old text + growing new text
              appendedText = chunk;
              setGeneratedStory(generatedStory + "\n\n" + appendedText);
         });
@@ -151,7 +155,6 @@ const App: React.FC = () => {
 
   const handleStoryUpdate = (newContent: string) => {
       setGeneratedStory(newContent);
-      // Auto-save edits if we have an active story ID
       if (activeStoryId) {
           const currentItem = history.find(h => h.id === activeStoryId);
           if (currentItem) {
@@ -165,7 +168,6 @@ const App: React.FC = () => {
       if (activeStoryId) {
           const currentItem = history.find(h => h.id === activeStoryId);
           if (currentItem) {
-              // Update history immediately with new lore so it persists
               saveToHistory(currentItem.content, currentItem.config, newLore, activeStoryId);
           }
       }
@@ -245,6 +247,15 @@ const App: React.FC = () => {
         return <ImageStudio initialImage={selectedImageToEdit} />;
       case AppView.INFOGRAPHICS:
         return <InfographicStudio />;
+      case AppView.PUBLISHER:
+        return (
+            <PublisherStudio 
+                activeStoryId={activeStoryId} 
+                history={history}
+                onUpdateStory={updateHistoryItem}
+                onSelectStory={(id) => setActiveStoryId(id)}
+            />
+        );
       case AppView.CHAT:
         return <ChatSection />;
       case AppView.HISTORY:
@@ -289,11 +300,9 @@ const App: React.FC = () => {
                                     <p className="text-sm text-gray-400 line-clamp-3 mb-4">{item.excerpt}</p>
                                     <div className="flex gap-2">
                                         <span className="text-xs px-2 py-1 bg-brand-900 rounded text-brand-accent">{item.config.genre}</span>
-                                        {item.lore && item.lore.length > 0 && (
-                                            <span className="text-xs px-2 py-1 bg-brand-900 rounded text-purple-400 flex items-center gap-1">
-                                                <span className="material-symbols-outlined text-[10px]">public</span> {item.lore.length}
-                                            </span>
-                                        )}
+                                        <button onClick={(e) => { e.stopPropagation(); setActiveStoryId(item.id); setView(AppView.PUBLISHER); }} className="text-xs px-2 py-1 bg-brand-700 hover:bg-brand-600 rounded text-white flex items-center gap-1">
+                                            <span className="material-symbols-outlined text-[10px]">publish</span> Publish
+                                        </button>
                                     </div>
                                 </div>
                             ))}
@@ -398,18 +407,18 @@ const App: React.FC = () => {
                 </div>
               </button>
 
-              {/* Canvas Studio Card */}
+              {/* Publisher Card (New) */}
               <button 
-                onClick={() => { setSelectedImageToEdit(null); handleNav(AppView.IMAGE_STUDIO); }}
+                onClick={() => handleNav(AppView.PUBLISHER)}
                 className="group relative bg-brand-800 p-6 md:p-8 rounded-3xl border border-brand-700 hover:border-brand-gold hover:bg-brand-800/80 transition-all text-left overflow-hidden h-full"
               >
                 <div className="absolute -right-10 -top-10 w-40 h-40 bg-brand-gold/10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
                 <div className="relative z-10 flex flex-col h-full items-start">
                     <div className="w-12 h-12 md:w-14 md:h-14 bg-brand-900 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:bg-brand-gold transition-colors shadow-lg border border-brand-700">
-                      <span className="material-symbols-outlined text-white text-xl md:text-2xl group-hover:text-brand-900">palette</span>
+                      <span className="material-symbols-outlined text-white text-xl md:text-2xl group-hover:text-brand-900">publish</span>
                     </div>
-                    <h3 className="text-lg md:text-xl font-bold text-white mb-2 font-serif">Canvas Studio</h3>
-                    <p className="text-gray-400 group-hover:text-gray-200 text-xs leading-relaxed mb-2 md:mb-4">Edit images with natural language using advanced vision AI.</p>
+                    <h3 className="text-lg md:text-xl font-bold text-white mb-2 font-serif">Publisher</h3>
+                    <p className="text-gray-400 group-hover:text-gray-200 text-xs leading-relaxed mb-2 md:mb-4">Format, design, and export your manuscript.</p>
                 </div>
               </button>
 
@@ -640,6 +649,7 @@ const App: React.FC = () => {
                     { id: AppView.WIZARD, label: 'Story' },
                     { id: AppView.IMAGE_STUDIO, label: 'Images' },
                     { id: AppView.INFOGRAPHICS, label: 'Infographics' },
+                    { id: AppView.PUBLISHER, label: 'Publish' },
                     { id: AppView.CHAT, label: 'Chat' },
                     { id: AppView.HISTORY, label: 'Library' }
                 ].map(item => (
@@ -672,6 +682,7 @@ const App: React.FC = () => {
                     { id: AppView.WIZARD, label: 'Story', icon: 'auto_stories' },
                     { id: AppView.IMAGE_STUDIO, label: 'Images', icon: 'palette' },
                     { id: AppView.INFOGRAPHICS, label: 'Infographics', icon: 'dashboard_customize' },
+                    { id: AppView.PUBLISHER, label: 'Publish', icon: 'publish' },
                     { id: AppView.CHAT, label: 'Chat', icon: 'chat' },
                     { id: AppView.HISTORY, label: 'Library', icon: 'history_edu' }
                 ].map(item => (
